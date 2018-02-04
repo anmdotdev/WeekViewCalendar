@@ -1,11 +1,9 @@
 // @flow
 
 import React from 'react';
-import { Platform, StyleSheet, View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 
-import Icon from 'react-native-vector-icons/Ionicons';
-
-const singleDateHeading = props => (
+const dateHeading = props => (
 	<View style={styles.container}>
 		<Text style={styles.dayText}>{props.day}</Text>
 		<Text style={styles.dateText}>{props.date}</Text>
@@ -18,8 +16,7 @@ const styles = StyleSheet.create({
 		flexDirection: 'column',
 		justifyContent: 'center',
 		alignItems: 'center',
-		height: '100%',
-		minWidth: 70
+		height: '100%'
 	},
 	dayText: {
 		color: 'white',
@@ -31,4 +28,4 @@ const styles = StyleSheet.create({
 	}
 });
 
-export default singleDateHeading;
+export default dateHeading;
