@@ -5,6 +5,7 @@ import { View, StyleSheet } from 'react-native';
 
 import AppBar from '../../components/AppBar/AppBar';
 import DateHeadings from '../../components/DateHeadings/DateHeadings';
+import HourlyScrollView from '../../components/HourlyScrollView/HourlyScrollView';
 
 class WeeklyCalendar extends Component<{}> {
 	constructor(props) {
@@ -27,23 +28,36 @@ class WeeklyCalendar extends Component<{}> {
 				'NOV',
 				'DEC'
 			],
-			appBarColors: ['#00B0FF']
+			hoursList: [
+				'12',
+				'1',
+				'2',
+				'3',
+				'4',
+				'5',
+				'6',
+				'7',
+				'8',
+				'9',
+				'10',
+				'11',
+				'12',
+				'1',
+				'2',
+				'3',
+				'4',
+				'5',
+				'6',
+				'7',
+				'8',
+				'9',
+				'10',
+				'11'
+			],
+			appBarColors: {
+				lightBlue: '#00B0FF'
+			}
 		};
-
-		const datesData = [];
-		const startingDate = new Date();
-
-		for (i = 0; i < 50; i++) {
-			startingDate.setDate(startingDate.getDate() + 1);
-
-			datesData[i] = {
-				key: 'data_' + i,
-				day: this.state.daysShortString[startingDate.getDay()],
-				date: startingDate.getDate(),
-				month: this.state.monthsShortString[startingDate.getMonth()],
-				year: startingDate.getFullYear()
-			};
-		}
 	}
 
 	monthDetailPressHandler = () => {
@@ -62,12 +76,13 @@ class WeeklyCalendar extends Component<{}> {
 		return (
 			<View style={styles.container}>
 				<AppBar
-					appBarColor={this.state.appBarColors[0]}
+					appBarColor={this.state.appBarColors.lightBlue}
 					monthDetailPressHandler={this.monthDetailPressHandler}
 					todayButtonPressHandler={this.todayButtonPressHandler}
 					moreButtonPressHandler={this.moreButtonPressHandler}
 				/>
-				<DateHeadings />
+				<DateHeadings barColor={this.state.appBarColors.lightBlue} />
+				<HourlyScrollView hoursList={this.state.hoursList} />
 			</View>
 		);
 	}

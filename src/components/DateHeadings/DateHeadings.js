@@ -6,27 +6,29 @@ import { View, Text, StyleSheet } from 'react-native';
 import DateHeading from './DateHeading/DateHeading';
 
 const dateHeadings = props => (
-	<View style={styles.container}>
-		<Text style={styles.timeText}>Time</Text>
+	<View style={[styles.container, { backgroundColor: props.barColor }]}>
+		<View style={styles.timeBlock} />
 		<DateHeading day="SUN" date="4" />
-		<DateHeading day="MON" date="5" />
+		<DateHeading day="MON" date="5" hasEvent />
 		<DateHeading day="TUE" date="6" />
 		<DateHeading day="WED" date="7" />
 		<DateHeading day="THU" date="8" />
+		<View style={styles.timeBlockRight} />
 	</View>
 );
 
 const styles = StyleSheet.create({
 	container: {
 		flexDirection: 'row',
-		backgroundColor: '#00B0FF',
 		alignItems: 'center',
-		height: 60
+		height: 80,
+		paddingTop: 15
 	},
-	timeText: {
-		color: 'white',
-		fontSize: 10,
-		marginLeft: 10
+	timeBlock: {
+		minWidth: 25
+	},
+	timeBlockRight: {
+		minWidth: 15
 	}
 });
 
