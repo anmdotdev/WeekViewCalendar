@@ -1,10 +1,11 @@
 // @flow
 
 import React, { Component } from 'react';
-import { StyleSheet, View, StatusBar } from 'react-native';
+import { StyleSheet, View, StatusBar, ScrollView } from 'react-native';
 
 import HeadingBar from '../../components/HeadingBar/HeadingBar';
 import DateHeadingFlatList from '../../components/DateHeadingFlatList/DateHeadingFlatList';
+import TimingFlatList from '../../components/TimingFlatList/TimingFlatList';
 
 class WeeklyCalendar extends Component<{}> {
 	constructor(props) {
@@ -63,6 +64,12 @@ class WeeklyCalendar extends Component<{}> {
 				<StatusBar backgroundColor="#00B0FF" barStyle="light-content" />
 				<HeadingBar />
 				<DateHeadingFlatList listData={this.state.dateListData} />
+
+				{/*
+				<ScrollView style={styles.scrollView}>
+					<TimingFlatList listData={this.state.dateListData} />
+				</ScrollView>
+                */}
 			</View>
 		);
 	}
@@ -70,6 +77,10 @@ class WeeklyCalendar extends Component<{}> {
 
 const styles = StyleSheet.create({
 	container: {
+		flex: 1,
+		backgroundColor: '#FFFFFF'
+	},
+	scrollView: {
 		flex: 1,
 		backgroundColor: '#FFFFFF'
 	}
