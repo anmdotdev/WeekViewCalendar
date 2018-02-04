@@ -1,43 +1,21 @@
 // @flow
 
 import React from 'react';
-import {
-	TouchableNativeFeedback,
-	TouchableOpacity,
-	View,
-	Text,
-	StyleSheet,
-	Platform
-} from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 
-const monthDetail = props => {
-	const content = (
+import Touchable from '../../Shared/Touchable';
+
+const monthDetail = props => (
+	<Touchable onPressHandler={props.onPressHandler} rippleBoundless>
 		<View style={styles.monthYearView}>
 			<Text style={styles.textMonth}>{props.month}</Text>
-
 			<View>
 				<Text style={styles.textYear}>{props.year}</Text>
 				<Text style={styles.textWeek}>{props.weekNo}</Text>
 			</View>
 		</View>
-	);
-
-	if (Platform.OS === 'android') {
-		return (
-			<TouchableNativeFeedback
-				onPress={props.onPressHandler}
-				background={TouchableNativeFeedback.Ripple('white', true)}>
-				{content}
-			</TouchableNativeFeedback>
-		);
-	} else {
-		return (
-			<TouchableOpacity onPress={props.onPressHandler}>
-				{content}
-			</TouchableOpacity>
-		);
-	}
-};
+	</Touchable>
+);
 
 const styles = StyleSheet.create({
 	monthYearView: {

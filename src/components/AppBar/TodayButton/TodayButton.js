@@ -1,38 +1,19 @@
 // @flow
 
 import React from 'react';
-import {
-	TouchableNativeFeedback,
-	TouchableOpacity,
-	View,
-	Text,
-	StyleSheet,
-	Platform
-} from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 
-const todayButton = props => {
-	const content = (
-		<View style={styles.todayButton}>
-			<Text style={styles.todayText}>{props.todaysDate}</Text>
+import Touchable from '../../Shared/Touchable';
+
+const todayButton = props => (
+	<Touchable onPressHandler={props.onPressHandler} rippleBoundless>
+		<View style={styles.todayButtonParent}>
+			<View style={styles.todayButton}>
+				<Text style={styles.todayText}>{props.todaysDate}</Text>
+			</View>
 		</View>
-	);
-
-	if (Platform.OS === 'android') {
-		return (
-			<TouchableNativeFeedback
-				onPress={props.onPressHandler}
-				background={TouchableNativeFeedback.Ripple('white', true)}>
-				<View style={styles.todayButtonParent}>{content}</View>
-			</TouchableNativeFeedback>
-		);
-	} else {
-		return (
-			<TouchableOpacity onPress={props.onPressHandler}>
-				{content}
-			</TouchableOpacity>
-		);
-	}
-};
+	</Touchable>
+);
 
 const styles = StyleSheet.create({
 	todayButtonParent: {

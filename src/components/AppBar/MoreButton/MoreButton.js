@@ -1,37 +1,18 @@
 // @flow
 
 import React from 'react';
-import {
-	TouchableNativeFeedback,
-	TouchableOpacity,
-	View,
-	StyleSheet,
-	Platform
-} from 'react-native';
-
+import { View, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
-const moreButton = props => {
-	const content = <Icon size={30} name="md-more" color="white" />;
+import Touchable from '../../Shared/Touchable';
 
-	if (Platform.OS === 'android') {
-		return (
-			<TouchableNativeFeedback
-				onPress={props.onPressHandler}
-				background={TouchableNativeFeedback.Ripple('white', true)}>
-				<View style={styles.settingsButton}>{content}</View>
-			</TouchableNativeFeedback>
-		);
-	} else {
-		return (
-			<TouchableOpacity
-				style={styles.settingsButton}
-				onPress={props.onPressHandler}>
-				{content}
-			</TouchableOpacity>
-		);
-	}
-};
+const moreButton = props => (
+	<Touchable onPressHandler={props.onPressHandler} rippleBoundless>
+		<View style={styles.settingsButton}>
+			<Icon size={30} name="md-more" color="white" />
+		</View>
+	</Touchable>
+);
 
 const styles = StyleSheet.create({
 	settingsButton: {

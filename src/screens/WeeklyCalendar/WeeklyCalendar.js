@@ -4,59 +4,19 @@ import React, { Component } from 'react';
 import { View, StyleSheet } from 'react-native';
 
 import AppBar from '../../components/AppBar/AppBar';
-import DateHeadings from '../../components/DateHeadings/DateHeadings';
-import HourlyScrollView from '../../components/HourlyScrollView/HourlyScrollView';
+import DatesScrollView from '../../components/DatesScrollVew/DatesScrollView';
+
+import { HOURS_LIST, APP_BAR_COLORS } from '../../utils/constants';
 
 class WeeklyCalendar extends Component<{}> {
 	constructor(props) {
 		super(props);
 
 		this.state = {
-			dateListData: [],
-			daysShortString: ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'],
-			monthsShortString: [
-				'JAN',
-				'FEB',
-				'MAR',
-				'APR',
-				'MAY',
-				'JUN',
-				'JUL',
-				'AUG',
-				'SEP',
-				'OCT',
-				'NOV',
-				'DEC'
-			],
-			hoursList: [
-				'12',
-				'1',
-				'2',
-				'3',
-				'4',
-				'5',
-				'6',
-				'7',
-				'8',
-				'9',
-				'10',
-				'11',
-				'12',
-				'1',
-				'2',
-				'3',
-				'4',
-				'5',
-				'6',
-				'7',
-				'8',
-				'9',
-				'10',
-				'11'
-			],
-			appBarColors: {
-				lightBlue: '#00B0FF'
-			}
+			todaysDate: new Date(),
+			previousWeek: {},
+			thisWeek: {},
+			nextWeek: {}
 		};
 	}
 
@@ -76,13 +36,15 @@ class WeeklyCalendar extends Component<{}> {
 		return (
 			<View style={styles.container}>
 				<AppBar
-					appBarColor={this.state.appBarColors.lightBlue}
+					appBarColor={APP_BAR_COLORS.lightBlue}
 					monthDetailPressHandler={this.monthDetailPressHandler}
 					todayButtonPressHandler={this.todayButtonPressHandler}
 					moreButtonPressHandler={this.moreButtonPressHandler}
 				/>
-				<DateHeadings barColor={this.state.appBarColors.lightBlue} />
-				<HourlyScrollView hoursList={this.state.hoursList} />
+				<DatesScrollView
+					hoursList={HOURS_LIST}
+					barColor={APP_BAR_COLORS.lightBlue}
+				/>
 			</View>
 		);
 	}
