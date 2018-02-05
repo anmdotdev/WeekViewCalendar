@@ -1,18 +1,18 @@
-const DAYS_SHORT_STRING = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
+const DAYS_SHORT_STRING = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 
 const MONTHS_SHORT_STRING = [
-	'JAN',
-	'FEB',
-	'MAR',
-	'APR',
-	'MAY',
-	'JUN',
-	'JUL',
-	'AUG',
-	'SEP',
-	'OCT',
-	'NOV',
-	'DEC'
+	'Jan',
+	'Feb',
+	'Mar',
+	'Apr',
+	'May',
+	'Jun',
+	'Jul',
+	'Aug',
+	'Sep',
+	'Oct',
+	'Nov',
+	'Dec'
 ];
 
 const HOURS_LIST = [

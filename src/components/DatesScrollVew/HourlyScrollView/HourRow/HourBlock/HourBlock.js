@@ -1,19 +1,12 @@
 // @flow
 
 import React from 'react';
-import {
-	View,
-	StyleSheet,
-	TouchableNativeFeedback,
-	TouchableOpacity,
-	TouchableWithoutFeedback,
-	Platform
-} from 'react-native';
+import { View, StyleSheet } from 'react-native';
 
 import Icon from 'react-native-vector-icons/Ionicons';
 
 const hourBox = props => {
-	const clickBox = (
+	const clickBlock = (
 		<View style={styles.addButton}>
 			<Icon size={12} name="md-add" color="white" />
 		</View>
@@ -39,12 +32,6 @@ const styles = StyleSheet.create({
 		width: '100%',
 		justifyContent: 'center',
 		alignItems: 'center'
-	},
-	hourText: {
-		fontSize: 12
-	},
-	hourSuffixText: {
-		fontSize: 8
 	}
 });
 

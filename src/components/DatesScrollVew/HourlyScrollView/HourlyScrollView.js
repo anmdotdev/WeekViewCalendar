@@ -1,28 +1,49 @@
-// @flow
+/**
+ * @flow
+ *
+ * Vertical scroll view component containing the Date Heading
+ * and the hour List of a Particular Page dates.
+ *
+ * 12 am - 1 am & so on...
+ */
 
-import React from 'react';
+import React, { Component } from 'react';
 import { ScrollView, StyleSheet, Dimensions } from 'react-native';
 
-import DateHeadings from './DateHeadings/DateHeadings';
-import TimeRow from './TimeRow/TimeRow';
+import DateHeaderRow from './DateHeaderRow/DateHeaderRow';
+import HourRow from './HourRow/HourRow';
 
-const hourlyScrollView = props => {
-	const content = props.hoursList.map((value, id) => (
-		<TimeRow
-			key={id}
-			hourValue={value}
-			hourSuffixValue={id < 12 ? 'AM' : 'PM'}
-		/>
-	));
+export default class HourlyScrollView extends Component {
+	render() {
+		const hoursList = this.props.hoursList.map((value, id) => (
+			<HourRow
+				key={id}
+				hourValue={value}
+				hourSuffix={id < 12 ? 'AM' : 'PM'}
+				datesData={this.props.datesData}
+			/>
+		));
 
-	return (
-		<ScrollView style={styles.container} stickyHeaderIndices={[0]}>
-			<DateHeadings barColor={props.barColor} />
-			<TimeRow hourValue="All" hourSuffixValue="Day" />
-			{content}
-		</ScrollView>
-	);
-};
+		return (
+			<ScrollView
+				style={styles.container}
+				stickyHeaderIndices={[0]}
+				showsVerticalScrollIndicator={false}
+				bounces={false}>
+				<DateHeaderRow
+					datesData={this.props.datesData}
+					barColor={this.props.barColor}
+				/>
+				<HourRow
+					hourValue="All"
+					hourSuffix="Day"
+					datesData={this.props.datesData}
+				/>
+				{hoursList}
+			</ScrollView>
+		);
+	}
+}
 
 const styles = StyleSheet.create({
 	container: {
@@ -30,5 +51,3 @@ const styles = StyleSheet.create({
 		minWidth: Dimensions.get('window').width
 	}
 });
-
-export default hourlyScrollView;

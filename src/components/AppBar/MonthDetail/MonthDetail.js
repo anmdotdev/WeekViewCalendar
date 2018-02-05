@@ -7,41 +7,23 @@ import Touchable from '../../Shared/Touchable';
 
 const monthDetail = props => (
 	<Touchable onPressHandler={props.onPressHandler} rippleBoundless>
-		<View style={styles.monthYearView}>
-			<Text style={styles.textMonth}>{props.month}</Text>
-			<View>
-				<Text style={styles.textYear}>{props.year}</Text>
-				<Text style={styles.textWeek}>{props.weekNo}</Text>
-			</View>
+		<View style={styles.container}>
+			<Text style={styles.text}>{props.month + ' ' + props.year}</Text>
 		</View>
 	</Touchable>
 );
 
 const styles = StyleSheet.create({
-	monthYearView: {
+	container: {
 		flexDirection: 'row',
-		marginLeft: 10,
-		padding: 10,
-		paddingTop: 5,
-		paddingBottom: 5
+		alignItems: 'center',
+		marginLeft: 15,
+		padding: 5
 	},
 
-	textMonth: {
+	text: {
 		color: 'white',
-		fontSize: 24
-	},
-
-	textYear: {
-		color: 'white',
-		marginTop: 3,
-		marginLeft: 8,
-		fontSize: 10
-	},
-
-	textWeek: {
-		color: 'white',
-		marginLeft: 8,
-		fontSize: 10
+		fontSize: 20
 	}
 });
 

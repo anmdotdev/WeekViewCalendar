@@ -7,6 +7,8 @@ import MonthDetail from './MonthDetail/MonthDetail';
 import TodayButton from './TodayButton/TodayButton';
 import MoreButton from './MoreButton/MoreButton';
 
+import { MONTHS_SHORT_STRING } from '../../utils/constants';
+
 const appBar = props => {
 	return (
 		<View
@@ -18,14 +20,13 @@ const appBar = props => {
 
 			<MonthDetail
 				onPressHandler={props.monthDetailPressHandler}
-				month="Feb"
-				year="2018"
-				weekNo="Week 5"
+				month={MONTHS_SHORT_STRING[props.todaysDate.getMonth()]}
+				year={props.todaysDate.getFullYear()}
 			/>
 
 			<View style={styles.rightIconsView}>
 				<TodayButton
-					todaysDate="4"
+					todaysDate={props.todaysDate.getDate()}
 					onPressHandler={props.todayButtonPressHandler}
 				/>
 				<MoreButton onPressHandler={props.moreButtonPressHandler} />

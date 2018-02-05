@@ -3,19 +3,13 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-const dateHeading = props => {
-	const eventDot = props.hasEvent ? (
-		<Text style={styles.eventDot}>.</Text>
-	) : null;
-
-	return (
-		<View style={styles.container}>
-			<Text style={styles.dayText}>{props.day}</Text>
-			<Text style={styles.dateText}>{props.date}</Text>
-			{eventDot}
-		</View>
-	);
-};
+const dateHeaderBlock = props => (
+	<View style={styles.container}>
+		<Text style={styles.dayText}>{props.day}</Text>
+		<Text style={styles.dateText}>{props.date}</Text>
+		{props.hasEvent ? <Text style={styles.eventDot}>.</Text> : null}
+	</View>
+);
 
 const styles = StyleSheet.create({
 	container: {
@@ -40,4 +34,4 @@ const styles = StyleSheet.create({
 	}
 });
 
-export default dateHeading;
+export default dateHeaderBlock;
