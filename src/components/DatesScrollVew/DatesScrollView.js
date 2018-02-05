@@ -8,22 +8,34 @@
  */
 
 import React, { Component } from 'react';
-import { FlatList, StyleSheet, Dimensions } from 'react-native';
+import { ScrollView, StyleSheet, Dimensions } from 'react-native';
 
 import HourlyScrollView from './HourlyScrollView/HourlyScrollView';
 
 const ITEM_WIDTH = Dimensions.get('window').width;
 
 export default class DatesScrollView extends Component {
-	scrollToItem = index => {
-		this.refs._horizontalFlatList.scrollToIndex({
-			animated: false,
-			index: '' + index
-		});
+	constructor(props) {
+		super(props);
+		this.isLoadingContent = true;
+	}
+
+	handleContentSizeChange = () => {
+		if (this.isLoadingContent) {
+			this.isLoadingContent = false;
+			this.handleContentSizeChange = null;
+
+			this.horizontalScrollView.scrollTo({
+				x: ITEM_WIDTH,
+				y: 0,
+				animated: false
+			});
+		}
 	};
 
-	viewableChanged = info => {
-		console.log('Info', info);
+	momentumScrollEnd = event => {
+		console.log('[momentumScrollEnd]', event.nativeEvent.contentOffset);
+		console.log('[itemWidth]', ITEM_WIDTH);
 	};
 
 	render() {
@@ -50,38 +62,33 @@ export default class DatesScrollView extends Component {
 			nextDates = this.props.datesAroundToday.slice(14, 21);
 		}
 
-		const combinedArray = [
-			{ key: 1, datesData: previousDates },
-			{ key: 2, datesData: currentDates },
-			{ key: 3, datesData: nextDates }
-		];
-
 		return (
-			<FlatList
-				ref="_horizontalFlatList"
+			<ScrollView
+				ref={ref => (this.horizontalScrollView = ref)}
 				style={styles.container}
-				keyExtractor={item => item.key}
 				pagingEnabled
 				horizontal
 				showsHorizontalScrollIndicator={false}
 				bounces={false}
-				getItemLayout={(data, index) => ({
-					length: ITEM_WIDTH,
-					offset: ITEM_WIDTH * index,
-					index
-				})}
-				initialNumToRender={3}
-				initialScrollIndex={1}
-				onViewableItemsChanged={this.viewableChanged}
-				data={combinedArray}
-				renderItem={({ item }) => (
-					<HourlyScrollView
-						datesData={item.datesData}
-						hoursList={this.props.hoursList}
-						barColor={this.props.barColor}
-					/>
-				)}
-			/>
+				onContentSizeChange={this.handleContentSizeChange}
+				onMomentumScrollBegin={this.momentumScrollBegin}
+				onMomentumScrollEnd={this.momentumScrollEnd}>
+				<HourlyScrollView
+					datesData={previousDates}
+					hoursList={this.props.hoursList}
+					barColor={this.props.barColor}
+				/>
+				<HourlyScrollView
+					datesData={currentDates}
+					hoursList={this.props.hoursList}
+					barColor={this.props.barColor}
+				/>
+				<HourlyScrollView
+					datesData={nextDates}
+					hoursList={this.props.hoursList}
+					barColor={this.props.barColor}
+				/>
+			</ScrollView>
 		);
 	}
 }
