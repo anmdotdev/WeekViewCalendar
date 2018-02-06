@@ -7,13 +7,13 @@
  * 12 am - 1 am & so on...
  */
 
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { ScrollView, StyleSheet, Dimensions } from 'react-native';
 
 import DateHeaderRow from './DateHeaderRow/DateHeaderRow';
 import HourRow from './HourRow/HourRow';
 
-export default class HourlyScrollView extends Component {
+export default class HourlyScrollView extends PureComponent {
 	render() {
 		const hoursList = this.props.hoursList.map((value, id) => (
 			<HourRow

@@ -1,22 +1,27 @@
 // @flow
 
-import React from 'react';
+import React, { PureComponent } from 'react';
 import { View, StyleSheet } from 'react-native';
 
 import HourHeaderBlock from './HourHeaderBlock/HourHeaderBlock';
 import HourBlock from './HourBlock/HourBlock';
 
-const hourRow = props => (
-	<View style={styles.container}>
-		<HourHeaderBlock
-			hourValue={props.hourValue}
-			hourSuffix={props.hourSuffix}
-		/>
-		{props.datesData.map(dateValue => (
-			<HourBlock key={dateValue.id} date={dateValue.date} />
-		))}
-	</View>
-);
+export default class HourRow extends PureComponent<{}> {
+	render() {
+		console.log('Hello');
+		return (
+			<View style={styles.container}>
+				<HourHeaderBlock
+					hourValue={this.props.hourValue}
+					hourSuffix={this.props.hourSuffix}
+				/>
+				{this.props.datesData.map(dateValue => (
+					<HourBlock key={dateValue.id} date={dateValue.date} />
+				))}
+			</View>
+		);
+	}
+}
 
 const styles = StyleSheet.create({
 	container: {
@@ -27,5 +32,3 @@ const styles = StyleSheet.create({
 		paddingRight: 14
 	}
 });
-
-export default hourRow;
