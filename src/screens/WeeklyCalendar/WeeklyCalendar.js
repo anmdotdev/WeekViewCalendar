@@ -139,7 +139,6 @@ class WeeklyCalendar extends Component<{}> {
 					todayButtonPressHandler={this.todayButtonPressHandler}
 					moreButtonPressHandler={this.moreButtonPressHandler}
 				/>
-
 				<DatesScrollView
 					hoursList={HOURS_LIST}
 					barColor={APP_BAR_COLORS.lightBlue}

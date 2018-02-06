@@ -20,10 +20,12 @@ const styles = StyleSheet.create({
 		height: '100%'
 	},
 	hourText: {
-		fontSize: 12
+		fontSize: 12,
+		color: '#000'
 	},
 	hourSuffixText: {
-		fontSize: 8
+		fontSize: 8,
+		color: '#000'
 	}
 });
 
