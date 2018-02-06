@@ -20,8 +20,8 @@ const appBar = props => {
 
 			<MonthDetail
 				onPressHandler={props.monthDetailPressHandler}
-				month={MONTHS_SHORT_STRING[props.todaysDate.getMonth()]}
-				year={props.todaysDate.getFullYear()}
+				month={MONTHS_SHORT_STRING[props.currentlyVisibleMonth]}
+				year={props.currentlyVisibleYear}
 			/>
 
 			<View style={styles.rightIconsView}>

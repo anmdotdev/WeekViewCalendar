@@ -26,7 +26,10 @@ export default class HourlyScrollView extends Component {
 
 		return (
 			<ScrollView
-				style={styles.container}
+				style={[
+					styles.container,
+					{ minWidth: this.props.dimensions.x }
+				]}
 				stickyHeaderIndices={[0]}
 				showsVerticalScrollIndicator={false}
 				bounces={false}>
@@ -47,7 +50,6 @@ export default class HourlyScrollView extends Component {
 
 const styles = StyleSheet.create({
 	container: {
-		flex: 1,
-		minWidth: Dimensions.get('window').width
+		flex: 1
 	}
 });

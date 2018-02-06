@@ -12,55 +12,58 @@ import { ScrollView, StyleSheet, Dimensions } from 'react-native';
 
 import HourlyScrollView from './HourlyScrollView/HourlyScrollView';
 
-const ITEM_WIDTH = Dimensions.get('window').width;
-
 export default class DatesScrollView extends Component {
 	constructor(props) {
 		super(props);
 		this.isLoadingContent = true;
 	}
 
-	handleContentSizeChange = () => {
-		if (this.isLoadingContent) {
-			this.isLoadingContent = false;
-			this.handleContentSizeChange = null;
+	componentDidUpdate() {
+		this.scrollToCenter();
+	}
 
-			this.horizontalScrollView.scrollTo({
-				x: ITEM_WIDTH,
-				y: 0,
-				animated: false
-			});
-		}
+	handleContentSizeChange = () => {
+		this.scrollToCenter();
+	};
+
+	scrollToCenter = () => {
+		this.horizontalScrollView.scrollTo({
+			x: this.props.screenDimensions.x,
+			y: 0,
+			animated: false
+		});
 	};
 
 	momentumScrollEnd = event => {
-		console.log('[momentumScrollEnd]', event.nativeEvent.contentOffset);
-		console.log('[itemWidth]', ITEM_WIDTH);
+		if (
+			Math.abs(
+				event.nativeEvent.contentOffset.x -
+					this.props.screenDimensions.x * 2
+			) < 10
+		) {
+			console.log('right', this.props.handleScrollToForData);
+			this.props.handleScrollToForData('right');
+		} else if (Math.abs(event.nativeEvent.contentOffset.x) < 10) {
+			console.log('left', this.props.handleScrollToForData);
+			this.props.handleScrollToForData('left');
+		}
 	};
 
 	render() {
-		let previousDates = null;
-		let currentDates = null;
-		let nextDates = null;
+		const daysInWeek = this.props.screenOrientation === 'portrait' ? 5 : 7;
 
-		if (this.props.screenOrientation === 'portrait') {
-			previousDates = this.props.datesAroundToday.slice(
-				this.props.currentDateIndex - 5,
-				this.props.currentDateIndex
-			);
-			currentDates = this.props.datesAroundToday.slice(
-				this.props.currentDateIndex,
-				this.props.currentDateIndex + 5
-			);
-			nextDates = this.props.datesAroundToday.slice(
-				this.props.currentDateIndex + 5,
-				this.props.currentDateIndex + 10
-			);
-		} else if (this.props.screenOrientation === 'landscape') {
-			previousDates = this.props.datesAroundToday.slice(0, 7);
-			currentDates = this.props.datesAroundToday.slice(7, 14);
-			nextDates = this.props.datesAroundToday.slice(14, 21);
-		}
+		let previousDates = this.props.currentlyVisibleDates.slice(
+			0,
+			daysInWeek
+		);
+		let currentDates = this.props.currentlyVisibleDates.slice(
+			daysInWeek,
+			daysInWeek * 2
+		);
+		let nextDates = this.props.currentlyVisibleDates.slice(
+			daysInWeek * 2,
+			daysInWeek * 3
+		);
 
 		return (
 			<ScrollView
@@ -77,16 +80,19 @@ export default class DatesScrollView extends Component {
 					datesData={previousDates}
 					hoursList={this.props.hoursList}
 					barColor={this.props.barColor}
+					dimensions={this.props.screenDimensions}
 				/>
 				<HourlyScrollView
 					datesData={currentDates}
 					hoursList={this.props.hoursList}
 					barColor={this.props.barColor}
+					dimensions={this.props.screenDimensions}
 				/>
 				<HourlyScrollView
 					datesData={nextDates}
 					hoursList={this.props.hoursList}
 					barColor={this.props.barColor}
+					dimensions={this.props.screenDimensions}
 				/>
 			</ScrollView>
 		);

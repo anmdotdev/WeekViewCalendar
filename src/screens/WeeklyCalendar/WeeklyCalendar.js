@@ -17,21 +17,34 @@ class WeeklyCalendar extends Component<{}> {
 				Dimensions.get('window').height > Dimensions.get('window').width
 					? 'portrait'
 					: 'landscape',
-			datesAroundToday: {},
+			screenDimensions: {
+				x: Dimensions.get('window').width,
+				y: Dimensions.get('window').height
+			},
 			todaysDate: new Date(),
-			currentDateIndex: new Date().getDay() + 7
+			currentlyVisibleDates: {},
+			currentlyVisibleMonth: null,
+			currentlyVisibleYear: null
 		};
+
+		Dimensions.addEventListener('change', this.onDimensionChange);
 	}
 
 	componentWillMount() {
 		this.generateDatesAroundToday();
 	}
 
+	componentWillUnmount() {
+		Dimensions.removeEventListener('change', this.onDimensionChange);
+	}
+
 	generateDatesAroundToday = () => {
-		const dates = new Array(21);
+		const daysInWeek = this.state.screenOrientation === 'portrait' ? 5 : 7;
+
+		const dates = new Array(daysInWeek * 3);
 
 		const dateValue = new Date();
-		const currentDateIndex = dateValue.getDay() + 7;
+		const currentDateIndex = dateValue.getDay() + daysInWeek;
 
 		dateValue.setDate(dateValue.getDate() - currentDateIndex);
 
@@ -48,8 +61,59 @@ class WeeklyCalendar extends Component<{}> {
 		}
 
 		this.setState({
-			datesAroundToday: dates,
-			currentDateIndex: currentDateIndex
+			screenDimensions: {
+				x: Dimensions.get('window').width,
+				y: Dimensions.get('window').height
+			},
+			currentlyVisibleDates: dates,
+			currentlyVisibleMonth: dates[daysInWeek].month,
+			currentlyVisibleYear: dates[daysInWeek].year
+		});
+	};
+
+	handleScrollToForData = direction => {
+		const daysInWeek = this.state.screenOrientation === 'portrait' ? 5 : 7;
+
+		const dates = [...this.state.currentlyVisibleDates];
+
+		const dateValue = new Date(
+			dates[0].year,
+			dates[0].month,
+			dates[0].date
+		);
+
+		if (direction === 'left') {
+			dateValue.setDate(dateValue.getDate() - daysInWeek);
+		} else {
+			dateValue.setDate(dateValue.getDate() + daysInWeek);
+		}
+
+		for (i = 0; i < dates.length; i++) {
+			dates[i] = {
+				id: 'date_' + i,
+				day: dateValue.getDay(),
+				date: dateValue.getDate(),
+				month: dateValue.getMonth(),
+				year: dateValue.getFullYear()
+			};
+
+			dateValue.setDate(dateValue.getDate() + 1);
+		}
+
+		this.setState({
+			currentlyVisibleDates: dates,
+			currentlyVisibleMonth: dates[daysInWeek].month,
+			currentlyVisibleYear: dates[daysInWeek].year
+		});
+	};
+
+	onDimensionChange = () => {
+		const screenOrientation =
+			Dimensions.get('window').height > Dimensions.get('window').width
+				? 'portrait'
+				: 'landscape';
+		this.setState({
+			screenOrientation: screenOrientation
 		});
 	};
 
@@ -71,6 +135,8 @@ class WeeklyCalendar extends Component<{}> {
 				<AppBar
 					appBarColor={APP_BAR_COLORS.lightBlue}
 					todaysDate={this.state.todaysDate}
+					currentlyVisibleMonth={this.state.currentlyVisibleMonth}
+					currentlyVisibleYear={this.state.currentlyVisibleYear}
 					monthDetailPressHandler={this.monthDetailPressHandler}
 					todayButtonPressHandler={this.todayButtonPressHandler}
 					moreButtonPressHandler={this.moreButtonPressHandler}
@@ -78,9 +144,11 @@ class WeeklyCalendar extends Component<{}> {
 				<DatesScrollView
 					hoursList={HOURS_LIST}
 					barColor={APP_BAR_COLORS.lightBlue}
-					datesAroundToday={this.state.datesAroundToday}
+					currentlyVisibleDates={this.state.currentlyVisibleDates}
 					currentDateIndex={this.state.currentDateIndex}
 					screenOrientation={this.state.screenOrientation}
+					screenDimensions={this.state.screenDimensions}
+					handleScrollToForData={this.handleScrollToForData}
 				/>
 			</View>
 		);
