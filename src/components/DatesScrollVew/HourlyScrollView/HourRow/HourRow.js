@@ -8,7 +8,6 @@ import HourBlock from './HourBlock/HourBlock';
 
 export default class HourRow extends PureComponent<{}> {
 	render() {
-		console.log('Hello');
 		return (
 			<View style={styles.container}>
 				<HourHeaderBlock

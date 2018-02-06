@@ -43,7 +43,7 @@ const HOURS_LIST = [
 ];
 
 const APP_BAR_COLORS = {
-	lightBlue: '#00B0FF'
+	lightBlue: '#0080ff'
 };
 
 export { DAYS_SHORT_STRING, MONTHS_SHORT_STRING, HOURS_LIST, APP_BAR_COLORS };

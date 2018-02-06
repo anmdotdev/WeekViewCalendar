@@ -3,13 +3,19 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-const dateHeaderBlock = props => (
-	<View style={styles.container}>
-		<Text style={styles.dayText}>{props.day}</Text>
-		<Text style={styles.dateText}>{props.date}</Text>
-		{props.hasEvent ? <Text style={styles.eventDot}>.</Text> : null}
-	</View>
-);
+const dateHeaderBlock = props => {
+	const isWeekDay = props.day === 'SAT' || props.day === 'SUN';
+
+	return (
+		<View style={styles.container}>
+			<Text style={styles.dayText}>{props.day}</Text>
+			<Text style={styles.dateText}>{props.date}</Text>
+			{props.hasEvent || props.isToday ? (
+				<Text style={styles.eventDot}>.</Text>
+			) : null}
+		</View>
+	);
+};
 
 const styles = StyleSheet.create({
 	container: {
@@ -30,7 +36,7 @@ const styles = StyleSheet.create({
 	eventDot: {
 		color: 'white',
 		fontSize: 35,
-		marginTop: -30
+		marginTop: -25
 	}
 });
 

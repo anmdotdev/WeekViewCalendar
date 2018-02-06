@@ -25,16 +25,18 @@ class WeeklyCalendar extends Component<{}> {
 			},
 			todaysDate: new Date(),
 			datesData: [],
-			loading: true
+			segregatedData: [],
+			loadingDatesData: true,
+			currentPage: 0
 		};
 	}
 
 	componentWillMount() {
-		this.generateDatesData();
+		this.initializeDatesState();
 	}
 
-	generateDatesData = () => {
-		const datesData = new Array(70);
+	initializeDatesState = () => {
+		const datesData = new Array(35);
 
 		const dateValue = new Date();
 		dateValue.setDate(dateValue.getDate() - dateValue.getDay());
@@ -45,13 +47,44 @@ class WeeklyCalendar extends Component<{}> {
 				day: dateValue.getDay(),
 				date: dateValue.getDate(),
 				month: dateValue.getMonth(),
-				year: dateValue.getFullYear()
+				year: dateValue.getFullYear(),
+				isToday:
+					dateValue.getDate() === this.state.todaysDate.getDate() &&
+					dateValue.getMonth() === this.state.todaysDate.getMonth() &&
+					dateValue.getFullYear() ===
+						this.state.todaysDate.getFullYear()
 			};
 
 			dateValue.setDate(dateValue.getDate() + 1);
 		}
 
-		this.setState({ datesData });
+		this.segregateData(
+			datesData,
+			this.state.screenOrientation === 'portrait' ? 5 : 7
+		);
+
+		this.setState({ datesData, loadingDatesData: false });
+	};
+
+	segregateData = (datesData, daysInWeek) => {
+		let segregatedData = [];
+
+		for (i = 0; i < datesData.length / daysInWeek; i++) {
+			const data = [];
+
+			for (j = 0; j < daysInWeek; j++) {
+				data[j] = datesData[i * daysInWeek + j];
+			}
+
+			segregatedData[i] = {
+				key: 'id_' + i,
+				datesData: data,
+				weekMonth: data[0].month,
+				weekYear: data[0].year
+			};
+		}
+
+		this.setState({ segregatedData });
 	};
 
 	monthDetailPressHandler = () => {
@@ -67,12 +100,21 @@ class WeeklyCalendar extends Component<{}> {
 	};
 
 	onDimensionChange = () => {
-		this.setState({
-			screenOrientation:
-				Dimensions.get('window').height > Dimensions.get('window').width
-					? 'portrait'
-					: 'landscape'
-		});
+		const screenOrientation =
+			Dimensions.get('window').height > Dimensions.get('window').width
+				? 'portrait'
+				: 'landscape';
+		const screenDimensions = {
+			x: Dimensions.get('window').width,
+			y: Dimensions.get('window').width
+		};
+
+		this.segregateData(
+			this.state.datesData,
+			screenOrientation === 'portrait' ? 5 : 7
+		);
+
+		this.setState({ screenOrientation, screenDimensions });
 	};
 
 	componentWillUnmount() {
@@ -85,6 +127,14 @@ class WeeklyCalendar extends Component<{}> {
 				<AppBar
 					appBarColor={APP_BAR_COLORS.lightBlue}
 					todaysDate={this.state.todaysDate}
+					currentlyVisibleMonth={
+						this.state.segregatedData[this.state.currentPage]
+							.weekMonth
+					}
+					currentlyVisibleYear={
+						this.state.segregatedData[this.state.currentPage]
+							.weekYear
+					}
 					monthDetailPressHandler={this.monthDetailPressHandler}
 					todayButtonPressHandler={this.todayButtonPressHandler}
 					moreButtonPressHandler={this.moreButtonPressHandler}
@@ -93,7 +143,7 @@ class WeeklyCalendar extends Component<{}> {
 				<DatesScrollView
 					hoursList={HOURS_LIST}
 					barColor={APP_BAR_COLORS.lightBlue}
-					datesData={this.state.datesData}
+					datesData={this.state.segregatedData}
 					screenOrientation={this.state.screenOrientation}
 					screenDimensions={this.state.screenDimensions}
 				/>

@@ -14,6 +14,7 @@ const dateHeaderRow = props => (
 				key={dateValue.id}
 				day={DAYS_SHORT_STRING[dateValue.day]}
 				date={dateValue.date}
+				isToday={dateValue.isToday}
 			/>
 		))}
 	</View>
