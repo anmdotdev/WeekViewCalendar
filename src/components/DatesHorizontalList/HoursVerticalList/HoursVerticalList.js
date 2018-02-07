@@ -20,9 +20,9 @@ export default class HoursVerticalList extends Component {
 
 	onContentSizeChange = (width, height) => {
 		const heightValue =
-			this.props.currentTime.hours * 80 - this.viewHeight < 0
-				? this.props.currentTime.hours * 80
-				: this.props.currentTime.hours * 80 - this.viewHeight;
+			(this.props.currentTime.hours - 1) * 80 - this.viewHeight < 0
+				? (this.props.currentTime.hours - 1) * 80
+				: (this.props.currentTime.hours - 1) * 80 - this.viewHeight;
 		this.scrollToHeight(heightValue);
 	};
 

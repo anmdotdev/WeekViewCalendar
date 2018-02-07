@@ -4,7 +4,7 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 
 const hourBlock = props => {
-	const recievedDate = new Date(
+	const thisBlocksDateTime = new Date(
 		props.date.year,
 		props.date.month,
 		props.date.date,
@@ -13,24 +13,32 @@ const hourBlock = props => {
 
 	const todaysDate = new Date();
 
-	const controlTimeBlockHeight =
-		recievedDate.getDate() === todaysDate.getDate() &&
-		recievedDate.getHours() === todaysDate.getHours();
+	const isPastTimeBlock = thisBlocksDateTime < todaysDate;
 
-	const timeBlockHeight = controlTimeBlockHeight
-		? {
-				height: props.currentTime.minutes * 100 / 60 + '%',
-				borderBottomWidth: 2,
-				borderColor: props.headerColor
-			}
-		: null;
+	const isCurrentTimeBlock =
+		thisBlocksDateTime.getDate() === todaysDate.getDate() &&
+		thisBlocksDateTime.getHours() === todaysDate.getHours();
 
-	const timePassedBlock =
-		todaysDate > recievedDate ? (
-			<View style={[styles.timePassedBlock, timeBlockHeight]} />
-		) : null;
+	const currentTimeBlockStyles = {
+		height: props.currentTime.minutes * 100 / 60 + '%',
+		borderBottomWidth: 2,
+		borderColor: props.headerColor
+	};
 
-	return <View style={styles.container}>{timePassedBlock}</View>;
+	const timeBlockStyles = [
+		isPastTimeBlock ? styles.pastTimeBlock : null,
+		isCurrentTimeBlock ? currentTimeBlockStyles : null
+    ];
+
+    const events = this.props.date.events;
+    
+    const hasEvent = thisBlocksDateTime >
+
+	return (
+		<View style={styles.container}>
+			<View style={timeBlockStyles} />
+		</View>
+	);
 };
 
 const styles = StyleSheet.create({
@@ -41,17 +49,9 @@ const styles = StyleSheet.create({
 		borderWidth: 0.4,
 		height: '100%',
 		justifyContent: 'flex-start',
-		alignItems: 'center'
+		alignItems: 'flex-start'
 	},
-	addButton: {
-		flex: 1,
-		backgroundColor: '#00B0FF',
-		borderRadius: 5,
-		width: '100%',
-		justifyContent: 'center',
-		alignItems: 'center'
-	},
-	timePassedBlock: {
+	pastTimeBlock: {
 		position: 'absolute',
 		top: 0,
 		backgroundColor: '#eee',

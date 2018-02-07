@@ -157,43 +157,15 @@ class WeeklyCalendar extends Component<{}> {
 				id: '1',
 				eventName: 'Dev Conference 2018',
 				eventDescription: 'The annual developer conference in 2018.',
-				eventStartDateTime: {
-					date: 8,
-					month: 2,
-					year: 2018,
-					hours: 8,
-					minutes: 30,
-					seconds: 0
-				},
-				eventEndDateTime: {
-					date: 8,
-					month: 2,
-					year: 2018,
-					hours: 12,
-					minutes: 30,
-					seconds: 0
-				}
+				eventStartDateTime: new Date(2018, 2, 9, 8, 30, 0),
+				eventStartDateTime: new Date(2018, 2, 9, 12, 30, 0)
 			},
 			{
 				id: '2',
 				eventName: 'Feedback Meeting',
 				eventDescription: 'Weekly feedback meeting',
-				eventStartDateTime: {
-					date: 8,
-					month: 2,
-					year: 2018,
-					hours: 18,
-					minutes: 30,
-					seconds: 0
-				},
-				eventEndDateTime: {
-					date: 8,
-					month: 2,
-					year: 2018,
-					hours: 19,
-					minutes: 0,
-					seconds: 0
-				}
+				eventStartDateTime: new Date(2018, 2, 9, 18, 30, 0),
+				eventStartDateTime: new Date(2018, 2, 9, 19, 30, 0)
 			}
 		];
 
@@ -249,6 +221,7 @@ class WeeklyCalendar extends Component<{}> {
 	};
 
 	onHorizontalScroll = event => {
+		/*
 		const currentPageIndexValue = Math.floor(
 			event.nativeEvent.contentOffset.x / this.state.screenDimensions.x
 		);
@@ -273,7 +246,8 @@ class WeeklyCalendar extends Component<{}> {
 			};
 
 			this.setState({ currentPageIndex });
-		}
+        }
+        */
 	};
 
 	render() {
