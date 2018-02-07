@@ -1,23 +1,31 @@
 // @flow
 
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 
 const hourBlock = props => {
-	const thisBlocksDateTime = new Date(
+	const thisBlocksStartDateTime = new Date(
 		props.date.year,
 		props.date.month,
 		props.date.date,
 		props.rowID
 	);
 
+	const thisBlocksEndDateTime = new Date(
+		props.date.year,
+		props.date.month,
+		props.date.date,
+		props.rowID,
+		59
+	);
+
 	const todaysDate = new Date();
 
-	const isPastTimeBlock = thisBlocksDateTime < todaysDate;
+	const isPastTimeBlock = thisBlocksStartDateTime < todaysDate;
 
 	const isCurrentTimeBlock =
-		thisBlocksDateTime.getDate() === todaysDate.getDate() &&
-		thisBlocksDateTime.getHours() === todaysDate.getHours();
+		thisBlocksStartDateTime.getDate() === todaysDate.getDate() &&
+		thisBlocksStartDateTime.getHours() === todaysDate.getHours();
 
 	const currentTimeBlockStyles = {
 		height: props.currentTime.minutes * 100 / 60 + '%',
@@ -28,15 +36,78 @@ const hourBlock = props => {
 	const timeBlockStyles = [
 		isPastTimeBlock ? styles.pastTimeBlock : null,
 		isCurrentTimeBlock ? currentTimeBlockStyles : null
-    ];
+	];
 
-    const events = this.props.date.events;
-    
-    const hasEvent = thisBlocksDateTime >
+	const events = props.date.events.filter(
+		event =>
+			(thisBlocksStartDateTime >= event.eventStartDateTime &&
+				thisBlocksStartDateTime <= event.eventEndDateTime) ||
+			(thisBlocksEndDateTime >= event.eventStartDateTime &&
+				thisBlocksEndDateTime <= event.eventEndDateTime)
+	);
+
+	const hasEvent = events.length > 0;
+	const isEventStartBlock =
+		hasEvent && thisBlocksStartDateTime <= events[0].eventStartDateTime;
+	const isEventEndBlock =
+		hasEvent && thisBlocksEndDateTime >= events[0].eventEndDateTime;
+
+	const hasEvent_Styles = {
+		position: 'absolute',
+		width: '100%',
+		height: '100%',
+		backgroundColor: '#eee',
+		borderLeftWidth: 1,
+		borderRightWidth: 1,
+		borderColor: '#ddd'
+	};
+
+	const eventStartBlockStyles = isEventStartBlock
+		? {
+				position: 'absolute',
+				top: events[0].eventStartDateTime.getMinutes() * 100 / 60 + '%',
+				borderTopWidth: 2,
+				borderLeftWidth: 1,
+				borderRightWidth: 1,
+				borderColor: '#ddd'
+			}
+		: null;
+
+	const eventEndBlockStyles = isEventEndBlock
+		? {
+				position: 'absolute',
+				height:
+					events[0].eventStartDateTime.getMinutes() * 100 / 60 + '%',
+				borderBottomWidth: 2,
+				borderLeftWidth: 1,
+				borderRightWidth: 1,
+				borderColor: '#ddd'
+			}
+		: null;
+
+	const eventBlockStyles = [
+		hasEvent ? hasEvent_Styles : null,
+		eventStartBlockStyles,
+		eventEndBlockStyles
+	];
+
+	const containerStyles = [
+		styles.container,
+		hasEvent && !isEventStartBlock && !isEventEndBlock
+			? { borderWidth: 0, borderLeftWidth: 0.4, borderRightWidth: 0.4 }
+			: null,
+		isEventStartBlock ? { borderBottomWidth: 0 } : null,
+		isEventEndBlock ? { borderTopWidth: 0 } : null
+	];
+
+	const eventNameText = isEventStartBlock ? (
+		<Text>{events[0].eventName}</Text>
+	) : null;
 
 	return (
-		<View style={styles.container}>
+		<View style={containerStyles}>
 			<View style={timeBlockStyles} />
+			<View style={eventBlockStyles}>{eventNameText}</View>
 		</View>
 	);
 };

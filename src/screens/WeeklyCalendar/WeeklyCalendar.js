@@ -1,14 +1,12 @@
-// @flow
-
 import React, { Component } from 'react';
-import { View, Dimensions } from 'react-native';
+import { View, AsyncStorage, Dimensions } from 'react-native';
 
 import AppBar from '../../components/AppBar/AppBar';
 import DatesHorizontalList from '../../components/DatesHorizontalList/DatesHorizontalList';
 
 import { HOURS_LIST, APP_BAR_COLORS } from '../../utils/constants';
 
-class WeeklyCalendar extends Component<{}> {
+class WeeklyCalendar extends Component {
 	constructor(props) {
 		super(props);
 
@@ -87,6 +85,12 @@ class WeeklyCalendar extends Component<{}> {
 		this.loadEventsData();
 	}
 
+	componentDidMount() {
+		AsyncStorage.getItem('name').then(value =>
+			this.setState({ name: value })
+		);
+	}
+
 	componentWillUnmount() {
 		Dimensions.removeEventListener(
 			'change',
@@ -157,26 +161,46 @@ class WeeklyCalendar extends Component<{}> {
 				id: '1',
 				eventName: 'Dev Conference 2018',
 				eventDescription: 'The annual developer conference in 2018.',
-				eventStartDateTime: new Date(2018, 2, 9, 8, 30, 0),
-				eventStartDateTime: new Date(2018, 2, 9, 12, 30, 0)
+				eventStartDateTime: new Date(2018, 1, 9, 8, 0, 0),
+				eventEndDateTime: new Date(2018, 1, 9, 12, 0, 0)
 			},
 			{
 				id: '2',
 				eventName: 'Feedback Meeting',
 				eventDescription: 'Weekly feedback meeting',
-				eventStartDateTime: new Date(2018, 2, 9, 18, 30, 0),
-				eventStartDateTime: new Date(2018, 2, 9, 19, 30, 0)
+				eventStartDateTime: new Date(2018, 1, 9, 18, 30, 0),
+				eventEndDateTime: new Date(2018, 1, 9, 19, 30, 0)
+			},
+			{
+				id: '3',
+				eventName: 'Feedback Meeting',
+				eventDescription: 'Weekly feedback meeting',
+				eventStartDateTime: new Date(2018, 1, 9, 22, 30, 0),
+				eventEndDateTime: new Date(2018, 1, 10, 2, 30, 0)
+			},
+			{
+				id: '4',
+				eventName: 'Feedback Meeting',
+				eventDescription: 'Weekly feedback meeting',
+				eventStartDateTime: new Date(2018, 1, 7, 3, 30, 0),
+				eventEndDateTime: new Date(2018, 1, 7, 5, 30, 0)
 			}
 		];
 
 		const datesData = [...this.state.datesData];
 
 		eventsData.map(event => {
-			const eventDate =
-				datesData[
-					this.indexOfDateinDatesData(event.eventStartDateTime)
-				];
-			eventDate.events.push(event);
+			const eventStartDate = this.indexOfDateinDatesData(
+				event.eventStartDateTime
+			);
+			const eventEndDate = this.indexOfDateinDatesData(
+				event.eventEndDateTime
+			);
+
+			datesData[eventStartDate].events.push(event);
+			if (eventEndDate !== eventStartDate) {
+				datesData[eventEndDate].events.push(event);
+			}
 		});
 
 		const paginatedData = this.generatePaginatedData(
@@ -192,9 +216,9 @@ class WeeklyCalendar extends Component<{}> {
 
 		for (i = 0; i < datesData.length; i++) {
 			if (
-				datesData[i].date === date.date &&
-				datesData[i].month === date.month - 1 &&
-				datesData[i].year === date.year
+				datesData[i].date === date.getDate() &&
+				datesData[i].month === date.getMonth() &&
+				datesData[i].year === date.getFullYear()
 			) {
 				return i;
 			}
