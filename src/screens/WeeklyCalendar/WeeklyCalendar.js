@@ -85,12 +85,6 @@ class WeeklyCalendar extends Component {
 		this.loadEventsData();
 	}
 
-	componentDidMount() {
-		AsyncStorage.getItem('name').then(value =>
-			this.setState({ name: value })
-		);
-	}
-
 	componentWillUnmount() {
 		Dimensions.removeEventListener(
 			'change',
