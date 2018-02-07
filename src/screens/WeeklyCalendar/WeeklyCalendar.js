@@ -133,31 +133,43 @@ class WeeklyCalendar extends Component<{}> {
         alert('You pressed the more button');
     };
 
-    onMomentumScrollEndHorizontalList = () => {
+    onHorizontalScroll = event => {
 
+        const currentPageIndex =
+            Math.floor(event.nativeEvent.contentOffset.x / this.state.screenDimensions.x);
+
+        if (this.state.screenOrientation === 'portrait' &&
+            currentPageIndex != this.state.currentPageIndexPortrait) {
+            this.setState({
+                currentPageIndexPortrait: currentPageIndex
+            });
+        }
+
+        if (this.state.screenOrientation === 'landscape' &&
+            currentPageIndex != this.state.currentPageIndexLandscape) {
+            this.setState({
+                currentPageIndexLandscape: currentPageIndex
+            });
+        }
     }
 
     render() {
 
-        const currentMonth =
-            this.state.screenOrientation === 'portrait' ?
-                this.state.paginatedDataPortrait[this.state.currentPageIndexPortrait].weekMonth :
-                this.state.paginatedDataLandscape[this.state.currentPageIndexLandscape].weekMonth;
+        const currentMonth = this.state.screenOrientation === 'portrait' ?
+            this.state.paginatedDataPortrait[this.state.currentPageIndexPortrait].weekMonth :
+            this.state.paginatedDataLandscape[this.state.currentPageIndexLandscape].weekMonth;
 
-        const currentYear =
-            this.state.screenOrientation === 'portrait' ?
-                this.state.paginatedDataPortrait[this.state.currentPageIndexPortrait].weekYear :
-                this.state.paginatedDataLandscape[this.state.currentPageIndexLandscape].weekYear;
+        const currentYear = this.state.screenOrientation === 'portrait' ?
+            this.state.paginatedDataPortrait[this.state.currentPageIndexPortrait].weekYear :
+            this.state.paginatedDataLandscape[this.state.currentPageIndexLandscape].weekYear;
 
-        const paginatedData =
-            this.state.screenOrientation === 'portrait' ?
-                this.state.paginatedDataPortrait :
-                this.state.paginatedDataLandscape;
+        const paginatedData = this.state.screenOrientation === 'portrait' ?
+            this.state.paginatedDataPortrait :
+            this.state.paginatedDataLandscape;
 
-        const currentPageIndex =
-            this.state.screenOrientation === 'portrait' ?
-                this.state.currentPageIndexPortrait :
-                this.state.currentPageIndexLandscape;
+        const currentPageIndex = this.state.screenOrientation === 'portrait' ?
+            this.state.currentPageIndexPortrait :
+            this.state.currentPageIndexLandscape;
 
         return (
             <View style={styles.container}>
@@ -176,7 +188,7 @@ class WeeklyCalendar extends Component<{}> {
                     headerColor={APP_BAR_COLORS[0]}
                     screenDimensions={this.state.screenDimensions}
                     currentPageIndex={currentPageIndex}
-                    onMomentumScrollEndHorizontalList={this.onMomentumScrollEndHorizontalList}
+                    onHorizontalScroll={this.onHorizontalScroll}
                 />
             </View>
         );

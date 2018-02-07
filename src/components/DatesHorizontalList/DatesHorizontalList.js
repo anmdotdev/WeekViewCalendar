@@ -36,7 +36,7 @@ export default class DatesHorizontalList extends Component {
                 showsHorizontalScrollIndicator={false}
                 bounces={false}
                 onContentSizeChange={this.scrollToCurrent}
-                onMomentumScrollEnd={this.props.onMomentumScrollEndHorizontalList}>
+                onScroll={this.props.onHorizontalScroll}>
                 {pageList}
             </ScrollView>
         );
