@@ -1,7 +1,7 @@
 // @flow
 
 import React, { Component } from 'react';
-import { View, StyleSheet, Dimensions } from 'react-native';
+import { View, Dimensions } from 'react-native';
 
 import AppBar from '../../components/AppBar/AppBar';
 import DatesHorizontalList from '../../components/DatesHorizontalList/DatesHorizontalList';
@@ -29,6 +29,11 @@ class WeeklyCalendar extends Component<{}> {
 		const initialDate = new Date();
 		const todaysIndex = initialDataLength / 2 + initialDate.getDay();
 
+		const currentTime = {
+			hours: initialDate.getHours(),
+			minutes: initialDate.getMinutes()
+		};
+
 		const datesData = new Array(initialDataLength);
 		initialDate.setDate(initialDate.getDate() - todaysIndex);
 
@@ -47,7 +52,10 @@ class WeeklyCalendar extends Component<{}> {
 		}
 
 		// Generate Paginated Data
-		const paginatedData = this.generatePaginatedData(datesData);
+		const paginatedData = this.generatePaginatedData(
+			datesData,
+			datesData[todaysIndex].day - 1
+		);
 
 		// Set Todays Paginated Index
 		const todaysPageIndex = {
@@ -70,7 +78,8 @@ class WeeklyCalendar extends Component<{}> {
 			datesData,
 			paginatedData,
 			todaysPageIndex,
-			currentPageIndex
+			currentPageIndex,
+			currentTime
 		};
 	}
 
@@ -99,7 +108,7 @@ class WeeklyCalendar extends Component<{}> {
 		this.setState({ screenOrientation, screenDimensions });
 	};
 
-	generatePaginatedData = datesData => {
+	generatePaginatedData = (datesData, portraitStartIndex) => {
 		// Set Paginated Data - 5 Days for Portrait
 		const paginatedDataPortrait = [];
 
@@ -107,7 +116,7 @@ class WeeklyCalendar extends Component<{}> {
 			const data = [];
 
 			for (j = 0; j < 5; j++) {
-				data[j] = datesData[i * 5 + j];
+				data[j] = datesData[i * 5 + j + portraitStartIndex];
 			}
 
 			paginatedDataPortrait[i] = {
@@ -198,7 +207,10 @@ class WeeklyCalendar extends Component<{}> {
 			eventDate.events.push(event);
 		});
 
-		const paginatedData = this.generatePaginatedData(datesData);
+		const paginatedData = this.generatePaginatedData(
+			datesData,
+			datesData[this.state.todaysIndex].day - 1
+		);
 
 		this.setState({ datesData, paginatedData });
 	};
@@ -226,7 +238,7 @@ class WeeklyCalendar extends Component<{}> {
 	todayButtonPressHandler = () => {
 		const currentPageIndex = {
 			portrait: this.state.todaysPageIndex.portrait,
-			landscape: this.state.todaysPageIndex.portrait
+			landscape: this.state.todaysPageIndex.landscape
 		};
 
 		this.setState({ currentPageIndex });
@@ -237,36 +249,30 @@ class WeeklyCalendar extends Component<{}> {
 	};
 
 	onHorizontalScroll = event => {
-		const currentPageIndex = Math.floor(
+		const currentPageIndexValue = Math.floor(
 			event.nativeEvent.contentOffset.x / this.state.screenDimensions.x
 		);
 
 		if (
 			this.state.screenOrientation === 'portrait' &&
-			currentPageIndex != this.state.currentPageIndex.portrait
+			currentPageIndexValue != this.state.currentPageIndex.portrait
 		) {
-			const currentPageIndexObj = {
-				portrait: currentPageIndex,
+			const currentPageIndex = {
+				portrait: currentPageIndexValue,
 				landscape: this.state.currentPageIndex.landscape
 			};
 
-			this.setState({
-				currentPageIndex: currentPageIndexObj
-			});
-		}
-
-		if (
+			this.setState({ currentPageIndex });
+		} else if (
 			this.state.screenOrientation === 'landscape' &&
-			currentPageIndex != this.state.currentPageIndex.landscape
+			currentPageIndexValue != this.state.currentPageIndex.landscape
 		) {
-			const currentPageIndexObj = {
+			const currentPageIndex = {
 				portrait: this.state.currentPageIndex.portrait,
-				landscape: currentPageIndex
+				landscape: currentPageIndexValue
 			};
 
-			this.setState({
-				currentPageIndex: currentPageIndexObj
-			});
+			this.setState({ currentPageIndex });
 		}
 	};
 
@@ -307,12 +313,13 @@ class WeeklyCalendar extends Component<{}> {
 				: this.state.currentPageIndex.landscape;
 
 		return (
-			<View style={styles.container}>
+			<View style={{ flex: 1 }}>
 				<AppBar
 					appBarColor={APP_BAR_COLORS[currentColorIndex]}
 					todaysDate={this.state.datesData[this.state.todaysIndex]}
 					currentMonth={currentMonth}
 					currentYear={currentYear}
+					screenOrientation={this.state.screenOrientation}
 					todayButtonPressHandler={this.todayButtonPressHandler}
 				/>
 				<DatesHorizontalList
@@ -320,19 +327,14 @@ class WeeklyCalendar extends Component<{}> {
 					hourRowsList={HOURS_LIST}
 					headerColor={APP_BAR_COLORS[currentColorIndex]}
 					screenDimensions={this.state.screenDimensions}
+					screenOrientation={this.state.screenOrientation}
 					currentPageIndex={currentPageIndex}
 					onHorizontalScroll={this.onHorizontalScroll}
+					currentTime={this.state.currentTime}
 				/>
 			</View>
 		);
 	}
 }
-
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		backgroundColor: APP_BAR_COLORS[0]
-	}
-});
 
 export default WeeklyCalendar;

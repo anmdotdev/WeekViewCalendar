@@ -27,6 +27,8 @@ export default class DatesHorizontalList extends Component {
 					hourRowsList={this.props.hourRowsList}
 					headerColor={this.props.headerColor}
 					screenDimensions={this.props.screenDimensions}
+					screenOrientation={this.props.screenOrientation}
+					currentTime={this.props.currentTime}
 					isEmpty={Math.abs(this.props.currentPageIndex - id) > 2}
 				/>
 			);

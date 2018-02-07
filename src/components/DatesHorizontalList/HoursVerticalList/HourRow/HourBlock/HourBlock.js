@@ -4,9 +4,33 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 
 const hourBlock = props => {
-	const timePassedBlock = <View style={styles.timePassedBlock} />;
+	const recievedDate = new Date(
+		props.date.year,
+		props.date.month,
+		props.date.date,
+		props.rowID
+	);
 
-	return <View style={styles.container} />;
+	const todaysDate = new Date();
+
+	const controlTimeBlockHeight =
+		recievedDate.getDate() === todaysDate.getDate() &&
+		recievedDate.getHours() === todaysDate.getHours();
+
+	const timeBlockHeight = controlTimeBlockHeight
+		? {
+				height: props.currentTime.minutes * 100 / 60 + '%',
+				borderBottomWidth: 2,
+				borderColor: props.headerColor
+			}
+		: null;
+
+	const timePassedBlock =
+		todaysDate > recievedDate ? (
+			<View style={[styles.timePassedBlock, timeBlockHeight]} />
+		) : null;
+
+	return <View style={styles.container}>{timePassedBlock}</View>;
 };
 
 const styles = StyleSheet.create({
@@ -28,9 +52,12 @@ const styles = StyleSheet.create({
 		alignItems: 'center'
 	},
 	timePassedBlock: {
+		position: 'absolute',
+		top: 0,
 		backgroundColor: '#eee',
+		opacity: 0.5,
 		width: '100%',
-		height: '80%',
+		height: '100%',
 		justifyContent: 'center',
 		alignItems: 'center'
 	}

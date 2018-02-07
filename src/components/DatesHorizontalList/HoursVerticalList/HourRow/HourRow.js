@@ -12,9 +12,17 @@ const hourRow = props => {
 			<HourHeaderBlock
 				hourValue={props.hourValue}
 				hourSuffix={props.hourSuffix}
+				rowID={props.ID}
+				date={props.dates[0]}
 			/>
 			{props.dates.map(dateValue => (
-				<HourBlock key={dateValue.id} date={dateValue} />
+				<HourBlock
+					key={dateValue.id}
+					rowID={props.ID}
+					date={dateValue}
+					currentTime={props.currentTime}
+					headerColor={props.headerColor}
+				/>
 			))}
 		</View>
 	);
@@ -26,7 +34,7 @@ const styles = StyleSheet.create({
 		backgroundColor: '#ffffff',
 		alignItems: 'center',
 		height: 80,
-		paddingRight: 14
+		paddingRight: 15
 	}
 });
 

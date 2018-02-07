@@ -14,33 +14,59 @@ export default class HoursVerticalList extends Component {
 		);
 	}
 
+	onViewLayout = event => {
+		this.viewHeight = event.nativeEvent.layout.height;
+	};
+
+	onContentSizeChange = (width, height) => {
+		const heightValue =
+			this.props.currentTime.hours * 80 - this.viewHeight < 0
+				? this.props.currentTime.hours * 80
+				: this.props.currentTime.hours * 80 - this.viewHeight;
+		this.scrollToHeight(heightValue);
+	};
+
+	scrollToHeight = height => {
+		this._hourVerticalScrollView.scrollTo({
+			x: 0,
+			y: height,
+			animated: false
+		});
+	};
+
 	render() {
 		const hoursList = this.props.hourRowsList.map((value, id) => (
 			<HourRow
 				key={id}
+				ID={id}
 				hourValue={value}
 				hourSuffix={id < 12 ? 'AM' : 'PM'}
 				dates={this.props.pagesDatesData}
+				currentTime={this.props.currentTime}
+				headerColor={this.props.headerColor}
 			/>
 		));
 
 		const hoursVerticalList = (
-			<ScrollView
-				style={{ flex: 1, minWidth: this.props.screenDimensions.x }}
-				stickyHeaderIndices={[0]}
-				showsVerticalScrollIndicator={false}
-				bounces={false}>
+			<View style={{ flex: 1, minWidth: this.props.screenDimensions.x }}>
 				<DateHeaderRow
 					dates={this.props.pagesDatesData}
 					headerColor={this.props.headerColor}
+					screenOrientation={this.props.screenOrientation}
 				/>
-				<HourRow
-					hourValue="All"
-					hourSuffix="Day"
-					dates={this.props.pagesDatesData}
-				/>
-				{hoursList}
-			</ScrollView>
+				<View style={{ flex: 1 }} onLayout={this.onViewLayout}>
+					<ScrollView
+						ref={component =>
+							(this._hourVerticalScrollView = component)
+						}
+						style={{ flex: 1 }}
+						showsVerticalScrollIndicator={false}
+						bounces={false}
+						onContentSizeChange={this.onContentSizeChange}>
+						{hoursList}
+					</ScrollView>
+				</View>
+			</View>
 		);
 
 		const emptyComponent = (

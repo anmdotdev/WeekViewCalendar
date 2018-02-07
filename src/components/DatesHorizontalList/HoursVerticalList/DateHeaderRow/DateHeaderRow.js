@@ -1,24 +1,30 @@
 // @flow
 
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Platform } from 'react-native';
 
 import DateHeaderBlock from './DateHeaderBlock/DateHeaderBlock';
 
 import { DAYS_SHORT_STRING } from '../../../../utils/constants';
 
-const dateHeaderRow = props => (
-	<View style={[styles.container, { backgroundColor: props.headerColor }]}>
-		{props.dates.map(dateValue => (
-			<DateHeaderBlock
-				key={dateValue.id}
-				day={DAYS_SHORT_STRING[dateValue.day]}
-				date={dateValue.date}
-				isToday={dateValue.isToday}
-			/>
-		))}
-	</View>
-);
+const dateHeaderRow = props => {
+	const additionalStyles = {
+		backgroundColor: props.headerColor
+	};
+
+	return (
+		<View style={[styles.container, additionalStyles]}>
+			{props.dates.map(dateValue => (
+				<DateHeaderBlock
+					key={dateValue.id}
+					day={DAYS_SHORT_STRING[dateValue.day]}
+					date={dateValue.date}
+					isToday={dateValue.isToday}
+				/>
+			))}
+		</View>
+	);
+};
 
 const styles = StyleSheet.create({
 	container: {
