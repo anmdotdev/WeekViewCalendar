@@ -5,7 +5,6 @@ import { View, StatusBar, StyleSheet, Platform } from 'react-native';
 
 import MonthDetail from './MonthDetail/MonthDetail';
 import TodayButton from './TodayButton/TodayButton';
-import MoreButton from './MoreButton/MoreButton';
 
 import { MONTHS_SHORT_STRING } from '../../utils/constants';
 
@@ -20,7 +19,6 @@ const appBar = props => (
         <MonthDetail
             month={MONTHS_SHORT_STRING[props.currentMonth]}
             year={props.currentYear}
-            onPressHandler={props.monthDetailPressHandler}
         />
 
         <View style={styles.rightIconsView}>
@@ -28,7 +26,6 @@ const appBar = props => (
                 todaysDate={props.todaysDate.date}
                 onPressHandler={props.todayButtonPressHandler}
             />
-            <MoreButton onPressHandler={props.moreButtonPressHandler} />
         </View>
     </View>
 );

@@ -9,197 +9,330 @@ import DatesHorizontalList from '../../components/DatesHorizontalList/DatesHoriz
 import { HOURS_LIST, APP_BAR_COLORS } from '../../utils/constants';
 
 class WeeklyCalendar extends Component<{}> {
-    constructor(props) {
-        super(props);
+	constructor(props) {
+		super(props);
 
-        // Initialize State
-        const screenOrientation =
-            Dimensions.get('window').height > Dimensions.get('window').width
-                ? 'portrait'
-                : 'landscape';
+		// Initialize State
+		const screenOrientation =
+			Dimensions.get('window').height > Dimensions.get('window').width
+				? 'portrait'
+				: 'landscape';
 
-        const screenDimensions = {
-            x: Dimensions.get('window').width,
-            y: Dimensions.get('window').height
-        };
+		const screenDimensions = {
+			x: Dimensions.get('window').width,
+			y: Dimensions.get('window').height
+		};
 
-        const initialDataLength = 350;
+		const initialDataLength = 350;
 
-        //Generate Dates Data
-        const initialDate = new Date();
-        const todaysIndex = initialDataLength / 2 + initialDate.getDay();
+		//Generate Dates Data
+		const initialDate = new Date();
+		const todaysIndex = initialDataLength / 2 + initialDate.getDay();
 
-        const datesData = new Array(initialDataLength);
-        initialDate.setDate(initialDate.getDate() - todaysIndex);
+		const datesData = new Array(initialDataLength);
+		initialDate.setDate(initialDate.getDate() - todaysIndex);
 
-        for (i = 0; i < datesData.length; i++) {
-            datesData[i] = {
-                id: 'date_' + i,
-                day: initialDate.getDay(),
-                date: initialDate.getDate(),
-                month: initialDate.getMonth(),
-                year: initialDate.getFullYear(),
-                isToday: todaysIndex === i
-            };
+		for (i = 0; i < datesData.length; i++) {
+			datesData[i] = {
+				id: 'date_' + i,
+				day: initialDate.getDay(),
+				date: initialDate.getDate(),
+				month: initialDate.getMonth(),
+				year: initialDate.getFullYear(),
+				isToday: todaysIndex === i,
+				events: []
+			};
 
-            initialDate.setDate(initialDate.getDate() + 1);
-        }
+			initialDate.setDate(initialDate.getDate() + 1);
+		}
 
-        // Set Paginated Data - 5 Days for Portrait
-        const paginatedDataPortrait = [];
+		// Generate Paginated Data
+		const paginatedData = this.generatePaginatedData(datesData);
 
-        for (i = 0; i < datesData.length / 5; i++) {
-            const data = [];
+		// Set Todays Paginated Index
+		const todaysPageIndex = {
+			portrait: Math.floor(todaysIndex / 5),
+			landscape: Math.floor(todaysIndex / 7)
+		};
 
-            for (j = 0; j < 5; j++) {
-                data[j] = datesData[i * 5 + j];
-            }
+		const currentPageIndex = {
+			portrait: Math.floor(todaysIndex / 5),
+			landscape: Math.floor(todaysIndex / 7)
+		};
 
-            paginatedDataPortrait[i] = {
-                key: 'id_' + i,
-                pagesDatesData: data,
-                weekMonth: data[0].month,
-                weekYear: data[0].year
-            };
-        }
+		// Add Dimension Change Listener
+		Dimensions.addEventListener('change', this.onDimensionChangeListener);
 
-        // Set Paginated Data - 7 Days for Landscape
-        const paginatedDataLandscape = [];
+		this.state = {
+			screenOrientation,
+			screenDimensions,
+			todaysIndex,
+			datesData,
+			paginatedData,
+			todaysPageIndex,
+			currentPageIndex
+		};
+	}
 
-        for (i = 0; i < datesData.length / 7; i++) {
-            const data = [];
+	componentWillMount() {
+		this.loadEventsData();
+	}
 
-            for (j = 0; j < 7; j++) {
-                data[j] = datesData[i * 7 + j];
-            }
+	componentWillUnmount() {
+		Dimensions.removeEventListener(
+			'change',
+			this.onDimensionChangeListener
+		);
+	}
 
-            paginatedDataLandscape[i] = {
-                key: 'id_' + i,
-                pagesDatesData: data,
-                weekMonth: data[0].month,
-                weekYear: data[0].year
-            };
-        }
+	onDimensionChangeListener = () => {
+		const screenOrientation =
+			Dimensions.get('window').height > Dimensions.get('window').width
+				? 'portrait'
+				: 'landscape';
 
-        //Set Todays Paginated Index
-        const todaysPageIndexPortrait = Math.floor(todaysIndex / 5);
-        const todaysPageIndexLandscape = Math.floor(todaysIndex / 7);
+		const screenDimensions = {
+			x: Dimensions.get('window').width,
+			y: Dimensions.get('window').height
+		};
 
-        // Add Dimension Change Listener
-        Dimensions.addEventListener('change', this.onDimensionChangeListener);
+		this.setState({ screenOrientation, screenDimensions });
+	};
 
-        this.state = {
-            screenOrientation,
-            screenDimensions,
-            todaysIndex,
-            datesData,
-            paginatedDataPortrait,
-            paginatedDataLandscape,
-            todaysPageIndexPortrait,
-            todaysPageIndexLandscape,
-            currentPageIndexPortrait: todaysPageIndexPortrait,
-            currentPageIndexLandscape: todaysPageIndexLandscape,
-        };
-    }
+	generatePaginatedData = datesData => {
+		// Set Paginated Data - 5 Days for Portrait
+		const paginatedDataPortrait = [];
 
-    componentWillUnmount() {
-        Dimensions.removeEventListener('change', this.onDimensionChangeListener);
-    }
+		for (i = 0; i < datesData.length / 5; i++) {
+			const data = [];
 
-    onDimensionChangeListener = () => {
+			for (j = 0; j < 5; j++) {
+				data[j] = datesData[i * 5 + j];
+			}
 
-        const screenOrientation =
-            Dimensions.get('window').height > Dimensions.get('window').width
-                ? 'portrait'
-                : 'landscape';
+			paginatedDataPortrait[i] = {
+				key: 'id_' + i,
+				pagesDatesData: data,
+				weekMonth: data[0].month,
+				weekYear: data[0].year
+			};
+		}
 
-        const screenDimensions = {
-            x: Dimensions.get('window').width,
-            y: Dimensions.get('window').height
-        };
+		// Set Paginated Data - 7 Days for Landscape
+		const paginatedDataLandscape = [];
 
-        this.setState({ screenOrientation, screenDimensions });
-    };
+		for (i = 0; i < datesData.length / 7; i++) {
+			const data = [];
 
-    monthDetailPressHandler = () => {
-        alert('You pressed the month detail');
-    };
+			for (j = 0; j < 7; j++) {
+				data[j] = datesData[i * 7 + j];
+			}
 
-    todayButtonPressHandler = () => {
-        alert('You pressed the today button');
-    };
+			paginatedDataLandscape[i] = {
+				key: 'id_' + i,
+				pagesDatesData: data,
+				weekMonth: data[0].month,
+				weekYear: data[0].year
+			};
+		}
 
-    moreButtonPressHandler = () => {
-        alert('You pressed the more button');
-    };
+		return {
+			portrait: paginatedDataPortrait,
+			landscape: paginatedDataLandscape
+		};
+	};
 
-    onHorizontalScroll = event => {
+	loadEventsData = () => {
+		const eventsData = [
+			{
+				id: '1',
+				eventName: 'Dev Conference 2018',
+				eventDescription: 'The annual developer conference in 2018.',
+				eventStartDateTime: {
+					date: 8,
+					month: 2,
+					year: 2018,
+					hours: 8,
+					minutes: 30,
+					seconds: 0
+				},
+				eventEndDateTime: {
+					date: 8,
+					month: 2,
+					year: 2018,
+					hours: 12,
+					minutes: 30,
+					seconds: 0
+				}
+			},
+			{
+				id: '2',
+				eventName: 'Feedback Meeting',
+				eventDescription: 'Weekly feedback meeting',
+				eventStartDateTime: {
+					date: 8,
+					month: 2,
+					year: 2018,
+					hours: 18,
+					minutes: 30,
+					seconds: 0
+				},
+				eventEndDateTime: {
+					date: 8,
+					month: 2,
+					year: 2018,
+					hours: 19,
+					minutes: 0,
+					seconds: 0
+				}
+			}
+		];
 
-        const currentPageIndex =
-            Math.floor(event.nativeEvent.contentOffset.x / this.state.screenDimensions.x);
+		const datesData = [...this.state.datesData];
 
-        if (this.state.screenOrientation === 'portrait' &&
-            currentPageIndex != this.state.currentPageIndexPortrait) {
-            this.setState({
-                currentPageIndexPortrait: currentPageIndex
-            });
-        }
+		eventsData.map(event => {
+			const eventDate =
+				datesData[
+					this.indexOfDateinDatesData(event.eventStartDateTime)
+				];
+			eventDate.events.push(event);
+		});
 
-        if (this.state.screenOrientation === 'landscape' &&
-            currentPageIndex != this.state.currentPageIndexLandscape) {
-            this.setState({
-                currentPageIndexLandscape: currentPageIndex
-            });
-        }
-    }
+		const paginatedData = this.generatePaginatedData(datesData);
 
-    render() {
+		this.setState({ datesData, paginatedData });
+	};
 
-        const currentMonth = this.state.screenOrientation === 'portrait' ?
-            this.state.paginatedDataPortrait[this.state.currentPageIndexPortrait].weekMonth :
-            this.state.paginatedDataLandscape[this.state.currentPageIndexLandscape].weekMonth;
+	indexOfDateinDatesData = date => {
+		const datesData = this.state.datesData;
 
-        const currentYear = this.state.screenOrientation === 'portrait' ?
-            this.state.paginatedDataPortrait[this.state.currentPageIndexPortrait].weekYear :
-            this.state.paginatedDataLandscape[this.state.currentPageIndexLandscape].weekYear;
+		for (i = 0; i < datesData.length; i++) {
+			if (
+				datesData[i].date === date.date &&
+				datesData[i].month === date.month - 1 &&
+				datesData[i].year === date.year
+			) {
+				return i;
+			}
+		}
 
-        const paginatedData = this.state.screenOrientation === 'portrait' ?
-            this.state.paginatedDataPortrait :
-            this.state.paginatedDataLandscape;
+		return -1;
+	};
 
-        const currentPageIndex = this.state.screenOrientation === 'portrait' ?
-            this.state.currentPageIndexPortrait :
-            this.state.currentPageIndexLandscape;
+	monthDetailPressHandler = () => {
+		alert('You pressed the month detail');
+	};
 
-        return (
-            <View style={styles.container}>
-                <AppBar
-                    appBarColor={APP_BAR_COLORS[0]}
-                    todaysDate={this.state.datesData[this.state.todaysIndex]}
-                    currentMonth={currentMonth}
-                    currentYear={currentYear}
-                    monthDetailPressHandler={this.monthDetailPressHandler}
-                    todayButtonPressHandler={this.todayButtonPressHandler}
-                    moreButtonPressHandler={this.moreButtonPressHandler}
-                />
-                <DatesHorizontalList
-                    paginatedData={paginatedData}
-                    hourRowsList={HOURS_LIST}
-                    headerColor={APP_BAR_COLORS[0]}
-                    screenDimensions={this.state.screenDimensions}
-                    currentPageIndex={currentPageIndex}
-                    onHorizontalScroll={this.onHorizontalScroll}
-                />
-            </View>
-        );
-    }
+	todayButtonPressHandler = () => {
+		const currentPageIndex = {
+			portrait: this.state.todaysPageIndex.portrait,
+			landscape: this.state.todaysPageIndex.portrait
+		};
+
+		this.setState({ currentPageIndex });
+	};
+
+	moreButtonPressHandler = () => {
+		alert('You pressed the Settings button. Nothing more to show here.');
+	};
+
+	onHorizontalScroll = event => {
+		const currentPageIndex = Math.floor(
+			event.nativeEvent.contentOffset.x / this.state.screenDimensions.x
+		);
+
+		if (
+			this.state.screenOrientation === 'portrait' &&
+			currentPageIndex != this.state.currentPageIndex.portrait
+		) {
+			const currentPageIndexObj = {
+				portrait: currentPageIndex,
+				landscape: this.state.currentPageIndex.landscape
+			};
+
+			this.setState({
+				currentPageIndex: currentPageIndexObj
+			});
+		}
+
+		if (
+			this.state.screenOrientation === 'landscape' &&
+			currentPageIndex != this.state.currentPageIndex.landscape
+		) {
+			const currentPageIndexObj = {
+				portrait: this.state.currentPageIndex.portrait,
+				landscape: currentPageIndex
+			};
+
+			this.setState({
+				currentPageIndex: currentPageIndexObj
+			});
+		}
+	};
+
+	render() {
+		const currentMonth =
+			this.state.screenOrientation === 'portrait'
+				? this.state.paginatedData.portrait[
+						this.state.currentPageIndex.portrait
+					].weekMonth
+				: this.state.paginatedData.landscape[
+						this.state.currentPageIndex.landscape
+					].weekMonth;
+
+		const currentYear =
+			this.state.screenOrientation === 'portrait'
+				? this.state.paginatedData.portrait[
+						this.state.currentPageIndex.portrait
+					].weekYear
+				: this.state.paginatedData.landscape[
+						this.state.currentPageIndex.landscape
+					].weekYear;
+
+		const todaysMonth = this.state.datesData[this.state.todaysIndex].month;
+
+		const currentColorIndex =
+			currentMonth - todaysMonth < 0
+				? APP_BAR_COLORS.length + (currentMonth - todaysMonth)
+				: currentMonth - todaysMonth;
+
+		const paginatedData =
+			this.state.screenOrientation === 'portrait'
+				? this.state.paginatedData.portrait
+				: this.state.paginatedData.landscape;
+
+		const currentPageIndex =
+			this.state.screenOrientation === 'portrait'
+				? this.state.currentPageIndex.portrait
+				: this.state.currentPageIndex.landscape;
+
+		return (
+			<View style={styles.container}>
+				<AppBar
+					appBarColor={APP_BAR_COLORS[currentColorIndex]}
+					todaysDate={this.state.datesData[this.state.todaysIndex]}
+					currentMonth={currentMonth}
+					currentYear={currentYear}
+					todayButtonPressHandler={this.todayButtonPressHandler}
+				/>
+				<DatesHorizontalList
+					paginatedData={paginatedData}
+					hourRowsList={HOURS_LIST}
+					headerColor={APP_BAR_COLORS[currentColorIndex]}
+					screenDimensions={this.state.screenDimensions}
+					currentPageIndex={currentPageIndex}
+					onHorizontalScroll={this.onHorizontalScroll}
+				/>
+			</View>
+		);
+	}
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: APP_BAR_COLORS[0]
-    }
+	container: {
+		flex: 1,
+		backgroundColor: APP_BAR_COLORS[0]
+	}
 });
 
 export default WeeklyCalendar;

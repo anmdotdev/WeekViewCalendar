@@ -3,36 +3,37 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 
-import Icon from 'react-native-vector-icons/Ionicons';
-
 const hourBlock = props => {
-    const clickBlock = (
-        <View style={styles.addButton}>
-            <Icon size={12} name="md-add" color="white" />
-        </View>
-    );
+	const timePassedBlock = <View style={styles.timePassedBlock} />;
 
-    return <View style={styles.container} />;
+	return <View style={styles.container} />;
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        flexDirection: 'column',
-        borderColor: '#eee',
-        borderWidth: 0.4,
-        height: '100%',
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    addButton: {
-        flex: 1,
-        backgroundColor: '#00B0FF',
-        borderRadius: 5,
-        width: '100%',
-        justifyContent: 'center',
-        alignItems: 'center'
-    }
+	container: {
+		flex: 1,
+		flexDirection: 'column',
+		borderColor: '#ddd',
+		borderWidth: 0.4,
+		height: '100%',
+		justifyContent: 'flex-start',
+		alignItems: 'center'
+	},
+	addButton: {
+		flex: 1,
+		backgroundColor: '#00B0FF',
+		borderRadius: 5,
+		width: '100%',
+		justifyContent: 'center',
+		alignItems: 'center'
+	},
+	timePassedBlock: {
+		backgroundColor: '#eee',
+		width: '100%',
+		height: '80%',
+		justifyContent: 'center',
+		alignItems: 'center'
+	}
 });
 
 export default hourBlock;
