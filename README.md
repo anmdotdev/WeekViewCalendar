@@ -12,8 +12,6 @@ NodeJS
 
 ### Installing
 
-Clone the Repo
-
 ```
 git clone https://github.com/anmolmahatpurkar/WeekViewCalendar.git
 
@@ -23,6 +21,8 @@ npm install
 
 react-native run-ios | react-native run-android
 ```
+
+Sample events data being loaded asynchronously through Firebase.
 
 ## Built With
 
