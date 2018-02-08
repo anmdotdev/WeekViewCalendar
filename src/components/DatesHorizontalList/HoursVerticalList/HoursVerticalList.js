@@ -10,9 +10,10 @@ export default class HoursVerticalList extends PureComponent {
 		this.onContentSizeChange();
 	};
 
-	onContentSizeChange = () => {
+	onContentSizeChange = (width, height) => {
 		const heightValue =
-			(this.props.currentTime.hours - 1) * 80 - this.viewHeight < 0
+			(this.props.currentTime.hours - 1) * 80 - this.viewHeight <
+			1920 - this.viewHeight
 				? (this.props.currentTime.hours - 1) * 80
 				: (this.props.currentTime.hours - 1) * 80 - this.viewHeight;
 

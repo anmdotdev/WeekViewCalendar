@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, AsyncStorage, Dimensions } from 'react-native';
+import { View, Dimensions } from 'react-native';
 
 import AppBar from '../../components/AppBar/AppBar';
 import DatesHorizontalList from '../../components/DatesHorizontalList/DatesHorizontalList';
@@ -81,16 +81,72 @@ class WeeklyCalendar extends Component {
 		};
 	}
 
-	componentWillMount() {
-		this.loadEventsData();
-	}
-
 	componentWillUnmount() {
 		Dimensions.removeEventListener(
 			'change',
 			this.onDimensionChangeListener
 		);
 	}
+
+	componentDidMount() {
+		fetch('https://week-view-calendar.firebaseio.com/eventsData.json')
+			.then(response => response.json())
+			.then(responseJson => {
+				console.log(responseJson);
+				this.loadEventsData(responseJson);
+			})
+			.catch(error => {
+				console.error(error);
+			});
+	}
+
+	loadEventsData = eventsData => {
+		const datesData = [...this.state.datesData];
+
+		console.log(eventsData);
+
+		eventsData.map(event => {
+			const eventData = {
+				id: event.id,
+				eventName: event.eventName,
+				eventStartDateTime: new Date(
+					event.eventStartDateTime.year,
+					event.eventStartDateTime.month,
+					event.eventStartDateTime.date,
+					event.eventStartDateTime.hours,
+					event.eventStartDateTime.minutes,
+					event.eventStartDateTime.seconds
+				),
+				eventEndDateTime: new Date(
+					event.eventEndDateTime.year,
+					event.eventEndDateTime.month,
+					event.eventEndDateTime.date,
+					event.eventEndDateTime.hours,
+					event.eventEndDateTime.minutes,
+					event.eventEndDateTime.seconds
+				)
+			};
+
+			const eventStartDateIndex = this.indexOfDateinDatesData(
+				eventData.eventStartDateTime
+			);
+			const eventEndDateIndex = this.indexOfDateinDatesData(
+				eventData.eventEndDateTime
+			);
+
+			datesData[eventStartDateIndex].events.push(eventData);
+			if (eventEndDateIndex !== eventStartDateIndex) {
+				datesData[eventEndDate].events.push(eventData);
+			}
+		});
+
+		const paginatedData = this.generatePaginatedData(
+			datesData,
+			datesData[this.state.todaysIndex].day - 1
+		);
+
+		this.setState({ datesData, paginatedData });
+	};
 
 	onDimensionChangeListener = () => {
 		const screenOrientation =
@@ -189,55 +245,6 @@ class WeeklyCalendar extends Component {
 			portrait: paginatedDataPortrait,
 			landscape: paginatedDataLandscape
 		};
-	};
-
-	loadEventsData = () => {
-		const eventsData = [
-			{
-				id: '1',
-				eventName: 'Dev Conference 2018',
-				eventDescription: 'The annual developer conference in 2018.',
-				eventStartDateTime: new Date(2018, 1, 9, 8, 0, 0),
-				eventEndDateTime: new Date(2018, 1, 9, 12, 0, 0)
-			},
-			{
-				id: '2',
-				eventName: 'Feedback Meeting',
-				eventDescription: 'Weekly feedback meeting',
-				eventStartDateTime: new Date(2018, 1, 9, 18, 30, 0),
-				eventEndDateTime: new Date(2018, 1, 9, 19, 30, 0)
-			},
-			{
-				id: '3',
-				eventName: 'Feedback Meeting',
-				eventDescription: 'Weekly feedback meeting',
-				eventStartDateTime: new Date(2018, 1, 7, 3, 30, 0),
-				eventEndDateTime: new Date(2018, 1, 7, 5, 30, 0)
-			}
-		];
-
-		const datesData = [...this.state.datesData];
-
-		eventsData.map(event => {
-			const eventStartDate = this.indexOfDateinDatesData(
-				event.eventStartDateTime
-			);
-			const eventEndDate = this.indexOfDateinDatesData(
-				event.eventEndDateTime
-			);
-
-			datesData[eventStartDate].events.push(event);
-			if (eventEndDate !== eventStartDate) {
-				datesData[eventEndDate].events.push(event);
-			}
-		});
-
-		const paginatedData = this.generatePaginatedData(
-			datesData,
-			datesData[this.state.todaysIndex].day - 1
-		);
-
-		this.setState({ datesData, paginatedData });
 	};
 
 	indexOfDateinDatesData = date => {

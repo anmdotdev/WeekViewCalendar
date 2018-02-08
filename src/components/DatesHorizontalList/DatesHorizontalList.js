@@ -27,7 +27,7 @@ export default class DatesHorizontalList extends Component {
 					screenDimensions={this.props.screenDimensions}
 					screenOrientation={this.props.screenOrientation}
 					currentTime={this.props.currentTime}
-					isEmpty={Math.abs(this.props.currentPageIndex - id) > 2}
+					isEmpty={Math.abs(this.props.currentPageIndex - id) > 3}
 				/>
 			);
 		});

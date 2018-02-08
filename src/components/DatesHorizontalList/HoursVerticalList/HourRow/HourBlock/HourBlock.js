@@ -1,7 +1,7 @@
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-export default class HourBlock extends PureComponent {
+export default class HourBlock extends Component {
 	render() {
 		const thisBlocksStartDateTime = new Date(
 			this.props.date.year,
