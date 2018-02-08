@@ -103,7 +103,49 @@ class WeeklyCalendar extends Component {
 			y: Dimensions.get('window').height
 		};
 
-		this.setState({ screenOrientation, screenDimensions });
+		const currentPageIndex = {
+			portrait: this.state.currentPageIndex.portrait,
+			landscape: this.state.currentPageIndex.landscape
+		};
+
+		if (screenOrientation === 'landscape') {
+			//Calculate from portrait
+			const currentStartDate = this.state.paginatedData.portrait[
+				this.state.currentPageIndex.portrait
+			].pagesDatesData[0];
+
+			currentPageIndex.landscape = Math.floor(
+				this.indexOfDateinDatesData(
+					new Date(
+						currentStartDate.year,
+						currentStartDate.month,
+						currentStartDate.date
+					)
+				) / 7
+			);
+		}
+
+		if (screenOrientation === 'portrait') {
+			const currentStartDate = this.state.paginatedData.landscape[
+				this.state.currentPageIndex.landscape
+			].pagesDatesData[0];
+
+			currentPageIndex.portrait = Math.floor(
+				this.indexOfDateinDatesData(
+					new Date(
+						currentStartDate.year,
+						currentStartDate.month,
+						currentStartDate.date
+					)
+				) / 5
+			);
+		}
+
+		this.setState({
+			screenOrientation,
+			screenDimensions,
+			currentPageIndex
+		});
 	};
 
 	generatePaginatedData = (datesData, portraitStartIndex) => {
@@ -169,13 +211,6 @@ class WeeklyCalendar extends Component {
 				id: '3',
 				eventName: 'Feedback Meeting',
 				eventDescription: 'Weekly feedback meeting',
-				eventStartDateTime: new Date(2018, 1, 9, 22, 30, 0),
-				eventEndDateTime: new Date(2018, 1, 10, 2, 30, 0)
-			},
-			{
-				id: '4',
-				eventName: 'Feedback Meeting',
-				eventDescription: 'Weekly feedback meeting',
 				eventStartDateTime: new Date(2018, 1, 7, 3, 30, 0),
 				eventEndDateTime: new Date(2018, 1, 7, 5, 30, 0)
 			}
@@ -221,10 +256,6 @@ class WeeklyCalendar extends Component {
 		return -1;
 	};
 
-	monthDetailPressHandler = () => {
-		alert('You pressed the month detail');
-	};
-
 	todayButtonPressHandler = () => {
 		const currentPageIndex = {
 			portrait: this.state.todaysPageIndex.portrait,
@@ -234,38 +265,55 @@ class WeeklyCalendar extends Component {
 		this.setState({ currentPageIndex });
 	};
 
-	moreButtonPressHandler = () => {
-		alert('You pressed the Settings button. Nothing more to show here.');
-	};
-
 	onHorizontalScroll = event => {
-		/*
-		const currentPageIndexValue = Math.floor(
-			event.nativeEvent.contentOffset.x / this.state.screenDimensions.x
-		);
+		//Initialize Scroll Offset
+		this.scrollOffset = this.scrollOffset
+			? this.scrollOffset
+			: this.state.screenOrientation === 'portrait'
+				? this.state.todaysPageIndex.portrait *
+					this.state.screenDimensions.x
+				: this.state.todaysPageIndex.landscape *
+					this.state.screenDimensions.x;
 
-		if (
-			this.state.screenOrientation === 'portrait' &&
-			currentPageIndexValue != this.state.currentPageIndex.portrait
-		) {
-			const currentPageIndex = {
-				portrait: currentPageIndexValue,
-				landscape: this.state.currentPageIndex.landscape
-			};
+		//Current Offset Value
+		const currentOffset = event.nativeEvent.contentOffset.x;
 
-			this.setState({ currentPageIndex });
-		} else if (
-			this.state.screenOrientation === 'landscape' &&
-			currentPageIndexValue != this.state.currentPageIndex.landscape
-		) {
-			const currentPageIndex = {
-				portrait: this.state.currentPageIndex.portrait,
-				landscape: currentPageIndexValue
-			};
+		const changeState =
+			Math.abs(this.scrollOffset - currentOffset) /
+				this.state.screenDimensions.x ===
+			1;
 
-			this.setState({ currentPageIndex });
-        }
-        */
+		//Change State
+		if (changeState) {
+			const currentPageIndexValue = Math.floor(
+				event.nativeEvent.contentOffset.x /
+					this.state.screenDimensions.x
+			);
+
+			if (
+				this.state.screenOrientation === 'portrait' &&
+				currentPageIndexValue != this.state.currentPageIndex.portrait
+			) {
+				const currentPageIndex = {
+					portrait: currentPageIndexValue,
+					landscape: this.state.currentPageIndex.landscape
+				};
+
+				this.setState({ currentPageIndex });
+			} else if (
+				this.state.screenOrientation === 'landscape' &&
+				currentPageIndexValue != this.state.currentPageIndex.landscape
+			) {
+				const currentPageIndex = {
+					portrait: this.state.currentPageIndex.portrait,
+					landscape: currentPageIndexValue
+				};
+
+				this.setState({ currentPageIndex });
+			}
+
+			this.scrollOffset = currentOffset;
+		}
 	};
 
 	render() {

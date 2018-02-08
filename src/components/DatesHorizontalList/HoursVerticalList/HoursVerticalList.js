@@ -1,28 +1,21 @@
-// @flow
-
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { ScrollView, View } from 'react-native';
 
 import DateHeaderRow from './DateHeaderRow/DateHeaderRow';
 import HourRow from './HourRow/HourRow';
 
-export default class HoursVerticalList extends Component {
-	shouldComponentUpdate(nextProps, nextState) {
-		return (
-			nextProps.isEmpty != this.props.isEmpty ||
-			nextProps.headerColor != this.props.headerColor
-		);
-	}
-
+export default class HoursVerticalList extends PureComponent {
 	onViewLayout = event => {
 		this.viewHeight = event.nativeEvent.layout.height;
+		this.onContentSizeChange();
 	};
 
-	onContentSizeChange = (width, height) => {
+	onContentSizeChange = () => {
 		const heightValue =
 			(this.props.currentTime.hours - 1) * 80 - this.viewHeight < 0
 				? (this.props.currentTime.hours - 1) * 80
 				: (this.props.currentTime.hours - 1) * 80 - this.viewHeight;
+
 		this.scrollToHeight(heightValue);
 	};
 

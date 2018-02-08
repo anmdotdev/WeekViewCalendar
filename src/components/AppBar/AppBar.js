@@ -1,6 +1,4 @@
-// @flow
-
-import React from 'react';
+import React, { PureComponent } from 'react';
 import { View, StatusBar, StyleSheet, Platform } from 'react-native';
 
 import MonthDetail from './MonthDetail/MonthDetail';
@@ -8,36 +6,38 @@ import TodayButton from './TodayButton/TodayButton';
 
 import { MONTHS_SHORT_STRING } from '../../utils/constants';
 
-const appBar = props => {
-	const additionalStyles = {
-		backgroundColor: props.appBarColor,
-		height:
-			props.screenOrientation === 'portrait'
-				? Platform.OS == 'ios' ? 70 : 55
-				: Platform.OS == 'ios' ? 50 : 25
-	};
+export default class AppBar extends PureComponent {
+	render() {
+		const additionalStyles = {
+			backgroundColor: this.props.appBarColor,
+			height:
+				this.props.screenOrientation === 'portrait'
+					? Platform.OS == 'ios' ? 70 : 55
+					: Platform.OS == 'ios' ? 50 : 25
+		};
 
-	return (
-		<View style={[styles.container, additionalStyles]}>
-			<StatusBar
-				backgroundColor={props.appBarColor}
-				barStyle="light-content"
-			/>
+		return (
+			<View style={[styles.container, additionalStyles]}>
+				<StatusBar
+					backgroundColor={this.props.appBarColor}
+					barStyle="light-content"
+				/>
 
-			<MonthDetail
-				month={MONTHS_SHORT_STRING[props.currentMonth]}
-				year={props.currentYear}
-				screenOrientation={props.screenOrientation}
-			/>
+				<MonthDetail
+					month={MONTHS_SHORT_STRING[this.props.currentMonth]}
+					year={this.props.currentYear}
+					screenOrientation={this.props.screenOrientation}
+				/>
 
-			<TodayButton
-				todaysDate={props.todaysDate.date}
-				onPressHandler={props.todayButtonPressHandler}
-				screenOrientation={props.screenOrientation}
-			/>
-		</View>
-	);
-};
+				<TodayButton
+					todaysDate={this.props.todaysDate.date}
+					onPressHandler={this.props.todayButtonPressHandler}
+					screenOrientation={this.props.screenOrientation}
+				/>
+			</View>
+		);
+	}
+}
 
 const styles = StyleSheet.create({
 	container: {
@@ -48,5 +48,3 @@ const styles = StyleSheet.create({
 		height: Platform.OS == 'ios' ? 70 : 55
 	}
 });
-
-export default appBar;

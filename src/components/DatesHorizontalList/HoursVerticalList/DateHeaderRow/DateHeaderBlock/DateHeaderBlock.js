@@ -1,24 +1,29 @@
-// @flow
-
-import React from 'react';
+import React, { PureComponent } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-const dateHeaderBlock = props => {
-	const isToday = props.isToday ? (
-		<View
-			style={[styles.isToday, props.hasEvent ? { height: 50 } : null]}
-		/>
-	) : null;
+export default class DateHeaderBlock extends PureComponent {
+	render() {
+		const isToday = this.props.isToday ? (
+			<View
+				style={[
+					styles.isToday,
+					this.props.hasEvent ? { height: 50 } : null
+				]}
+			/>
+		) : null;
 
-	return (
-		<View style={styles.container}>
-			{isToday}
-			<Text style={styles.dayText}>{props.day}</Text>
-			<Text style={styles.dateText}>{props.date}</Text>
-			{props.hasEvent ? <Text style={styles.eventDot}>.</Text> : null}
-		</View>
-	);
-};
+		return (
+			<View style={styles.container}>
+				{isToday}
+				<Text style={styles.dayText}>{this.props.day}</Text>
+				<Text style={styles.dateText}>{this.props.date}</Text>
+				{this.props.hasEvent ? (
+					<Text style={styles.eventDot}>.</Text>
+				) : null}
+			</View>
+		);
+	}
+}
 
 const styles = StyleSheet.create({
 	container: {
@@ -51,5 +56,3 @@ const styles = StyleSheet.create({
 		borderWidth: 1.5
 	}
 });
-
-export default dateHeaderBlock;

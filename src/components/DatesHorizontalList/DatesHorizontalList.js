@@ -1,5 +1,3 @@
-// @flow
-
 import React, { Component } from 'react';
 import { ScrollView } from 'react-native';
 
@@ -43,6 +41,7 @@ export default class DatesHorizontalList extends Component {
 				showsHorizontalScrollIndicator={false}
 				bounces={false}
 				onContentSizeChange={this.scrollToCurrent}
+				scrollEventThrottle={10}
 				onScroll={this.props.onHorizontalScroll}>
 				{pageList}
 			</ScrollView>
