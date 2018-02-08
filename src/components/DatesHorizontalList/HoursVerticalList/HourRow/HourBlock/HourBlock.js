@@ -24,7 +24,9 @@ export default class HourBlock extends Component {
 
 		const isCurrentTimeBlock =
 			thisBlocksStartDateTime.getDate() === todaysDate.getDate() &&
-			thisBlocksStartDateTime.getHours() === todaysDate.getHours();
+			thisBlocksStartDateTime.getHours() === todaysDate.getHours() &&
+			thisBlocksStartDateTime.getMonth() === todaysDate.getMonth() &&
+			thisBlocksStartDateTime.getFullYear() === todaysDate.getFullYear();
 
 		const currentTimeBlockStyles = {
 			height: this.props.currentTime.minutes * 100 / 60 + '%',
