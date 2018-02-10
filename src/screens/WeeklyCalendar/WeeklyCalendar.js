@@ -57,12 +57,12 @@ class WeeklyCalendar extends Component {
 
 		// Set Todays Paginated Index
 		const todaysPageIndex = {
-			portrait: Math.floor(todaysIndex / 5),
+			portrait: Math.floor(todaysIndex / 5) - 1,
 			landscape: Math.floor(todaysIndex / 7)
 		};
 
 		const currentPageIndex = {
-			portrait: Math.floor(todaysIndex / 5),
+			portrait: Math.floor(todaysIndex / 5) - 1,
 			landscape: Math.floor(todaysIndex / 7)
 		};
 
@@ -208,7 +208,7 @@ class WeeklyCalendar extends Component {
 		// Set Paginated Data - 5 Days for Portrait
 		const paginatedDataPortrait = [];
 
-		for (i = 0; i < datesData.length / 5; i++) {
+		for (i = 0; i < datesData.length / 5 - 1; i++) {
 			const data = [];
 
 			for (j = 0; j < 5; j++) {
