@@ -3,17 +3,17 @@ import { View, Text, StyleSheet } from 'react-native';
 
 export default class HourHeaderBlock extends PureComponent {
 	render() {
-		const recievedDate = new Date(
-			this.props.date.year,
-			this.props.date.month,
-			this.props.date.date,
+		const myDate = new Date(
+			this.props.myDate.year,
+			this.props.myDate.month,
+			this.props.myDate.date,
 			this.props.rowID < 0 ? 0 : this.props.rowID
 		);
 
 		const todaysDate = new Date();
 
 		const timePassedBlock =
-			todaysDate > recievedDate ? (
+			todaysDate > myDate ? (
 				<View style={styles.timePassedBlock} />
 			) : null;
 
@@ -33,12 +33,13 @@ const styles = StyleSheet.create({
 	timeBlock: {
 		flexDirection: 'column',
 		minWidth: 25,
-		borderColor: '#ddd',
+		borderColor: 'rgba(250,250,250,1)',
 		borderWidth: 0.4,
 		alignItems: 'center',
 		height: '100%'
 	},
 	hourText: {
+		marginTop: 5,
 		fontSize: 12,
 		color: '#000'
 	},
@@ -49,7 +50,7 @@ const styles = StyleSheet.create({
 	timePassedBlock: {
 		position: 'absolute',
 		top: 0,
-		backgroundColor: '#eee',
+		backgroundColor: 'rgba(250,250,250,1)',
 		width: '100%',
 		height: '100%',
 		justifyContent: 'center',

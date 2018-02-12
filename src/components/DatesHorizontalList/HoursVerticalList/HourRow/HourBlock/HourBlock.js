@@ -1,37 +1,28 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
+import EventBlock from './EventBlock/EventBlock';
+
 export default class HourBlock extends Component {
+	shouldComponentUpdate(nextProps) {
+		return nextProps.myEvents.length != this.props.myEvents.length;
+	}
+
 	render() {
-		const thisBlocksStartDateTime = new Date(
-			this.props.date.year,
-			this.props.date.month,
-			this.props.date.date,
-			this.props.rowID
-		);
-
-		const thisBlocksEndDateTime = new Date(
-			this.props.date.year,
-			this.props.date.month,
-			this.props.date.date,
-			this.props.rowID,
-			59
-		);
-
-		const todaysDate = new Date();
-
-		const isPastTimeBlock = thisBlocksStartDateTime < todaysDate;
-
-		const isCurrentTimeBlock =
-			thisBlocksStartDateTime.getDate() === todaysDate.getDate() &&
-			thisBlocksStartDateTime.getHours() === todaysDate.getHours() &&
-			thisBlocksStartDateTime.getMonth() === todaysDate.getMonth() &&
-			thisBlocksStartDateTime.getFullYear() === todaysDate.getFullYear();
+		const {
+			headerColor,
+			currentTime,
+			myStartDateTime,
+			myEndDateTime,
+			isPastTimeBlock,
+			isCurrentTimeBlock,
+			myEvents
+		} = this.props;
 
 		const currentTimeBlockStyles = {
-			height: this.props.currentTime.minutes * 100 / 60 + '%',
+			height: currentTime.minutes * 100 / 60 + '%',
 			borderBottomWidth: 3,
-			borderColor: this.props.headerColor
+			borderColor: headerColor
 		};
 
 		const timeBlockStyles = [
@@ -39,83 +30,45 @@ export default class HourBlock extends Component {
 			isCurrentTimeBlock ? currentTimeBlockStyles : null
 		];
 
-		const events = this.props.date.events.filter(
-			event =>
-				(thisBlocksStartDateTime >= event.eventStartDateTime &&
-					thisBlocksStartDateTime <= event.eventEndDateTime) ||
-				(thisBlocksEndDateTime >= event.eventStartDateTime &&
-					thisBlocksEndDateTime <= event.eventEndDateTime)
-		);
+		const containerStyles = [styles.container];
 
-		const hasEvent = events.length > 0;
-		const isEventStartBlock =
-			hasEvent && thisBlocksStartDateTime <= events[0].eventStartDateTime;
-		const isEventEndBlock =
-			hasEvent && thisBlocksEndDateTime >= events[0].eventEndDateTime;
+		const eventContent = myEvents.map(event => {
+			const isEventStartBlock =
+				myStartDateTime <= event.eventStartDateTime;
 
-		const hasEvent_Styles = {
-			position: 'absolute',
-			width: '100%',
-			height: '100%',
-			backgroundColor: '#eee',
-			borderLeftWidth: 1,
-			borderRightWidth: 1,
-			borderColor: '#ddd'
-		};
+			const isEventEndBlock = myEndDateTime >= event.eventEndDateTime;
+			const isEventMidBlock = !isEventStartBlock && !isEventEndBlock;
 
-		const eventStartBlockStyles = isEventStartBlock
-			? {
-					position: 'absolute',
-					top:
-						events[0].eventStartDateTime.getMinutes() * 100 / 60 +
-						'%',
-					borderTopWidth: 2,
-					borderLeftWidth: 1,
-					borderRightWidth: 1,
-					borderColor: '#ddd'
-				}
-			: null;
+			if (isEventStartBlock) {
+				containerStyles.push({ borderBottomWidth: 0 });
+			}
+			if (isEventMidBlock) {
+				containerStyles.push({
+					borderTopWidth: 0,
+					borderBottomWidth: 0
+				});
+			}
+			if (isEventEndBlock) {
+				containerStyles.push({ borderTopWidth: 0 });
+			}
 
-		const eventEndBlockStyles = isEventEndBlock
-			? {
-					position: 'absolute',
-					height:
-						events[0].eventStartDateTime.getMinutes() * 100 / 60 +
-						'%',
-					borderBottomWidth: 2,
-					borderLeftWidth: 1,
-					borderRightWidth: 1,
-					borderColor: '#ddd'
-				}
-			: null;
-
-		const eventBlockStyles = [
-			hasEvent ? hasEvent_Styles : null,
-			eventStartBlockStyles,
-			eventEndBlockStyles
-		];
-
-		const containerStyles = [
-			styles.container,
-			hasEvent && !isEventStartBlock && !isEventEndBlock
-				? {
-						borderWidth: 0,
-						borderLeftWidth: 0.4,
-						borderRightWidth: 0.4
-					}
-				: null,
-			isEventStartBlock ? { borderBottomWidth: 0 } : null,
-			isEventEndBlock ? { borderTopWidth: 0 } : null
-		];
-
-		const eventNameText = isEventStartBlock ? (
-			<Text>{events[0].eventName}</Text>
-		) : null;
+			return (
+				<EventBlock
+					key={event.id}
+					isEventStartBlock={isEventStartBlock}
+					isEventEndBlock={isEventEndBlock}
+					isEventMidBlock={isEventMidBlock}
+					color={headerColor}
+					isPastTimeBlock={isPastTimeBlock}
+					myEventData={event}
+				/>
+			);
+		});
 
 		return (
 			<View style={containerStyles}>
 				<View style={timeBlockStyles} />
-				<View style={eventBlockStyles}>{eventNameText}</View>
+				{eventContent}
 			</View>
 		);
 	}
@@ -125,17 +78,17 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		flexDirection: 'column',
-		borderColor: '#ddd',
+		borderColor: 'rgba(245,245,245,1)',
 		borderWidth: 0.4,
 		height: '100%',
 		justifyContent: 'flex-start',
 		alignItems: 'flex-start'
 	},
+
 	pastTimeBlock: {
 		position: 'absolute',
 		top: 0,
-		backgroundColor: '#eee',
-		opacity: 0.5,
+		backgroundColor: '#rgba(250,250,250,1)',
 		width: '100%',
 		height: '100%',
 		justifyContent: 'center',

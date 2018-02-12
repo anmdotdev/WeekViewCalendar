@@ -10,17 +10,31 @@ const dateHeaderRow = props => {
 		backgroundColor: props.headerColor
 	};
 
+	const dateBlocks = props.myDatesData.map(date => {
+		const isToday = date.id === 'date_' + props.todaysIndex;
+		let hasEvent = false;
+
+		props.myEventsData.map(event => {
+			if (!hasEvent) {
+				hasEvent =
+					date.id === 'date_' + event.startDateIndexInDatesData ||
+					date.id === 'date_' + event.endDateIndexInDatesData;
+			}
+		});
+
+		return (
+			<DateHeaderBlock
+				key={date.id}
+				day={DAYS_SHORT_STRING[date.day]}
+				date={date.date}
+				isToday={isToday}
+				hasEvent={hasEvent}
+			/>
+		);
+	});
+
 	return (
-		<View style={[styles.container, additionalStyles]}>
-			{props.dates.map(dateValue => (
-				<DateHeaderBlock
-					key={dateValue.id}
-					day={DAYS_SHORT_STRING[dateValue.day]}
-					date={dateValue.date}
-					isToday={dateValue.isToday}
-				/>
-			))}
-		</View>
+		<View style={[styles.container, additionalStyles]}>{dateBlocks}</View>
 	);
 };
 

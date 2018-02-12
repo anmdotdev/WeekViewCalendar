@@ -3,18 +3,35 @@ import { View, Text, StyleSheet } from 'react-native';
 
 import Touchable from '../../Shared/Touchable';
 
-const todayButton = props => (
-	<Touchable onPressHandler={props.onPressHandler} rippleBoundless>
-		<View style={styles.todayButtonParent}>
-			<View style={styles.todayButton}>
-				<Text style={styles.todayText}>{props.todaysDate}</Text>
+const todayButton = props => {
+	const todayButtonStyles = [
+		styles.todayButton,
+		props.screenOrientation === 'landscape'
+			? {
+					width: 20,
+					height: 20
+				}
+			: null
+	];
+
+	const todayTextStyles = [
+		styles.todayText,
+		props.screenOrientation === 'landscape' ? { fontSize: 10 } : null
+	];
+
+	return (
+		<Touchable onPressHandler={props.onPressHandler} rippleBoundless>
+			<View style={styles.touchableArea}>
+				<View style={todayButtonStyles}>
+					<Text style={todayTextStyles}>{props.todaysDate}</Text>
+				</View>
 			</View>
-		</View>
-	</Touchable>
-);
+		</Touchable>
+	);
+};
 
 const styles = StyleSheet.create({
-	todayButtonParent: {
+	touchableArea: {
 		alignItems: 'center',
 		justifyContent: 'center',
 		margin: 10,

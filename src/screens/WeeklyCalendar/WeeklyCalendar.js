@@ -10,7 +10,6 @@ class WeeklyCalendar extends Component {
 	constructor(props) {
 		super(props);
 
-		// Initialize State
 		const screenOrientation =
 			Dimensions.get('window').height > Dimensions.get('window').width
 				? 'portrait'
@@ -21,9 +20,8 @@ class WeeklyCalendar extends Component {
 			y: Dimensions.get('window').height
 		};
 
-		const initialDataLength = 350;
+		const initialDataLength = 700;
 
-		//Generate Dates Data
 		const initialDate = new Date();
 		const todaysIndex = initialDataLength / 2 + initialDate.getDay();
 
@@ -35,49 +33,65 @@ class WeeklyCalendar extends Component {
 		const datesData = new Array(initialDataLength);
 		initialDate.setDate(initialDate.getDate() - todaysIndex);
 
+		const portraitOffStart = initialDate.getDay() - 1;
+
 		for (i = 0; i < datesData.length; i++) {
 			datesData[i] = {
 				id: 'date_' + i,
 				day: initialDate.getDay(),
 				date: initialDate.getDate(),
 				month: initialDate.getMonth(),
-				year: initialDate.getFullYear(),
-				isToday: todaysIndex === i,
-				events: []
+				year: initialDate.getFullYear()
 			};
 
 			initialDate.setDate(initialDate.getDate() + 1);
 		}
 
-		// Generate Paginated Data
-		const paginatedData = this.generatePaginatedData(
-			datesData,
-			datesData[todaysIndex].day - 1
-		);
+		const pagesPortrait = [];
+		for (i = 0; i < datesData.length / 5; i++) {
+			const data = [];
 
-		// Set Todays Paginated Index
+			for (j = 0; j < 5; j++) {
+				data[j] = i * 5 + j + portraitOffStart;
+			}
+
+			pagesPortrait[i] = data;
+		}
+
+		const pagesLandscape = [];
+		for (i = 0; i < datesData.length / 7; i++) {
+			const data = [];
+
+			for (j = 0; j < 7; j++) {
+				data[j] = i * 7 + j;
+			}
+
+			pagesLandscape[i] = data;
+		}
+
 		const todaysPageIndex = {
-			portrait: Math.floor(todaysIndex / 5) - 1,
+			portrait: Math.floor(todaysIndex / 5),
 			landscape: Math.floor(todaysIndex / 7)
 		};
 
 		const currentPageIndex = {
-			portrait: Math.floor(todaysIndex / 5) - 1,
+			portrait: Math.floor(todaysIndex / 5),
 			landscape: Math.floor(todaysIndex / 7)
 		};
 
-		// Add Dimension Change Listener
 		Dimensions.addEventListener('change', this.onDimensionChangeListener);
 
 		this.state = {
 			screenOrientation,
 			screenDimensions,
-			todaysIndex,
 			datesData,
-			paginatedData,
+			todaysIndex,
+			currentTime,
+			pagesPortrait,
+			pagesLandscape,
 			todaysPageIndex,
 			currentPageIndex,
-			currentTime
+			eventsData: null
 		};
 	}
 
@@ -89,26 +103,27 @@ class WeeklyCalendar extends Component {
 	}
 
 	componentDidMount() {
-		fetch('https://week-view-calendar.firebaseio.com/eventsData.json')
-			.then(response => response.json())
-			.then(responseJson => {
-				console.log(responseJson);
-				this.loadEventsData(responseJson);
-			})
-			.catch(error => {
-				console.error(error);
-			});
+		if (!this.state.eventsData) {
+			fetch('https://week-view-calendar.firebaseio.com/eventsData.json')
+				.then(response => response.json())
+				.then(responseJson => {
+					this.loadEventsData(responseJson);
+				})
+				.catch(error => {
+					console.error(error);
+				});
+		}
 	}
 
-	loadEventsData = eventsData => {
-		const datesData = [...this.state.datesData];
+	loadEventsData = loadedEventData => {
+		const eventsData = [];
 
-		console.log(eventsData);
-
-		eventsData.map(event => {
+		loadedEventData.map(event => {
 			const eventData = {
 				id: event.id,
 				eventName: event.eventName,
+				startDateIndexInDatesData: 0,
+				endDateIndexInDatesData: 0,
 				eventStartDateTime: new Date(
 					event.eventStartDateTime.year,
 					event.eventStartDateTime.month,
@@ -127,25 +142,38 @@ class WeeklyCalendar extends Component {
 				)
 			};
 
-			const eventStartDateIndex = this.indexOfDateinDatesData(
-				eventData.eventStartDateTime
-			);
-			const eventEndDateIndex = this.indexOfDateinDatesData(
-				eventData.eventEndDateTime
+			eventData.startDateIndexInDatesData = this.findIndexOfDateInDatesData(
+				eventData.eventStartDateTime.getFullYear(),
+				eventData.eventStartDateTime.getMonth(),
+				eventData.eventStartDateTime.getDate()
 			);
 
-			datesData[eventStartDateIndex].events.push(eventData);
-			if (eventEndDateIndex !== eventStartDateIndex) {
-				datesData[eventEndDate].events.push(eventData);
-			}
+			eventData.endDateIndexInDatesData = this.findIndexOfDateInDatesData(
+				eventData.eventEndDateTime.getFullYear(),
+				eventData.eventEndDateTime.getMonth(),
+				eventData.eventEndDateTime.getDate()
+			);
+
+			eventsData.push(eventData);
 		});
 
-		const paginatedData = this.generatePaginatedData(
-			datesData,
-			datesData[this.state.todaysIndex].day - 1
-		);
+		this.setState({ eventsData });
+	};
 
-		this.setState({ datesData, paginatedData });
+	findIndexOfDateInDatesData = (year, month, date) => {
+		const datesData = this.state.datesData;
+
+		for (i = 0; i < datesData.length; i++) {
+			if (
+				datesData[i].date === date &&
+				datesData[i].month === month &&
+				datesData[i].year === year
+			) {
+				return i;
+			}
+		}
+
+		return -1;
 	};
 
 	onDimensionChangeListener = () => {
@@ -166,35 +194,19 @@ class WeeklyCalendar extends Component {
 
 		if (screenOrientation === 'landscape') {
 			//Calculate from portrait
-			const currentStartDate = this.state.paginatedData.portrait[
+			const currentStartDateIndex = this.state.pagesPortrait[
 				this.state.currentPageIndex.portrait
-			].pagesDatesData[0];
+			][2];
 
-			currentPageIndex.landscape = Math.floor(
-				this.indexOfDateinDatesData(
-					new Date(
-						currentStartDate.year,
-						currentStartDate.month,
-						currentStartDate.date
-					)
-				) / 7
-			);
+			currentPageIndex.landscape = Math.floor(currentStartDateIndex / 7);
 		}
 
 		if (screenOrientation === 'portrait') {
-			const currentStartDate = this.state.paginatedData.landscape[
+			const currentStartDateIndex = this.state.pagesLandscape[
 				this.state.currentPageIndex.landscape
-			].pagesDatesData[0];
+			][3];
 
-			currentPageIndex.portrait = Math.floor(
-				this.indexOfDateinDatesData(
-					new Date(
-						currentStartDate.year,
-						currentStartDate.month,
-						currentStartDate.date
-					)
-				) / 5
-			);
+			currentPageIndex.portrait = Math.floor(currentStartDateIndex / 5);
 		}
 
 		this.setState({
@@ -202,65 +214,6 @@ class WeeklyCalendar extends Component {
 			screenDimensions,
 			currentPageIndex
 		});
-	};
-
-	generatePaginatedData = (datesData, portraitStartIndex) => {
-		// Set Paginated Data - 5 Days for Portrait
-		const paginatedDataPortrait = [];
-
-		for (i = 0; i < datesData.length / 5 - 1; i++) {
-			const data = [];
-
-			for (j = 0; j < 5; j++) {
-				data[j] = datesData[i * 5 + j + portraitStartIndex];
-			}
-
-			paginatedDataPortrait[i] = {
-				key: 'id_' + i,
-				pagesDatesData: data,
-				weekMonth: data[0].month,
-				weekYear: data[0].year
-			};
-		}
-
-		// Set Paginated Data - 7 Days for Landscape
-		const paginatedDataLandscape = [];
-
-		for (i = 0; i < datesData.length / 7; i++) {
-			const data = [];
-
-			for (j = 0; j < 7; j++) {
-				data[j] = datesData[i * 7 + j];
-			}
-
-			paginatedDataLandscape[i] = {
-				key: 'id_' + i,
-				pagesDatesData: data,
-				weekMonth: data[0].month,
-				weekYear: data[0].year
-			};
-		}
-
-		return {
-			portrait: paginatedDataPortrait,
-			landscape: paginatedDataLandscape
-		};
-	};
-
-	indexOfDateinDatesData = date => {
-		const datesData = this.state.datesData;
-
-		for (i = 0; i < datesData.length; i++) {
-			if (
-				datesData[i].date === date.getDate() &&
-				datesData[i].month === date.getMonth() &&
-				datesData[i].year === date.getFullYear()
-			) {
-				return i;
-			}
-		}
-
-		return -1;
 	};
 
 	todayButtonPressHandler = () => {
@@ -287,8 +240,11 @@ class WeeklyCalendar extends Component {
 
 		const changeState =
 			Math.abs(this.scrollOffset - currentOffset) /
-				this.state.screenDimensions.x ===
-			1;
+				this.state.screenDimensions.x >=
+				0.9 ||
+			Math.abs(this.scrollOffset - currentOffset) /
+				this.state.screenDimensions.x <=
+				1.1;
 
 		//Change State
 		if (changeState) {
@@ -324,60 +280,50 @@ class WeeklyCalendar extends Component {
 	};
 
 	render() {
-		const currentMonth =
-			this.state.screenOrientation === 'portrait'
-				? this.state.paginatedData.portrait[
-						this.state.currentPageIndex.portrait
-					].weekMonth
-				: this.state.paginatedData.landscape[
-						this.state.currentPageIndex.landscape
-					].weekMonth;
+		const datesData = this.state.datesData;
+		let pageData = null;
+		let currentPageIndex = null;
 
-		const currentYear =
-			this.state.screenOrientation === 'portrait'
-				? this.state.paginatedData.portrait[
-						this.state.currentPageIndex.portrait
-					].weekYear
-				: this.state.paginatedData.landscape[
-						this.state.currentPageIndex.landscape
-					].weekYear;
+		if (this.state.screenOrientation === 'portrait') {
+			pageData = this.state.pagesPortrait;
+			currentPageIndex = this.state.currentPageIndex.portrait;
+		} else {
+			pageData = this.state.pagesLandscape;
+			currentPageIndex = this.state.currentPageIndex.landscape;
+		}
 
-		const todaysMonth = this.state.datesData[this.state.todaysIndex].month;
+		const currentMonth = datesData[pageData[currentPageIndex][0]].month;
+		const currentYear = datesData[pageData[currentPageIndex][0]].year;
+		const todaysMonth = datesData[this.state.todaysIndex].month;
 
 		const currentColorIndex =
 			currentMonth - todaysMonth < 0
 				? APP_BAR_COLORS.length + (currentMonth - todaysMonth)
 				: currentMonth - todaysMonth;
 
-		const paginatedData =
-			this.state.screenOrientation === 'portrait'
-				? this.state.paginatedData.portrait
-				: this.state.paginatedData.landscape;
-
-		const currentPageIndex =
-			this.state.screenOrientation === 'portrait'
-				? this.state.currentPageIndex.portrait
-				: this.state.currentPageIndex.landscape;
-
 		return (
 			<View style={{ flex: 1 }}>
 				<AppBar
 					appBarColor={APP_BAR_COLORS[currentColorIndex]}
-					todaysDate={this.state.datesData[this.state.todaysIndex]}
+					todaysDate={datesData[this.state.todaysIndex]}
 					currentMonth={currentMonth}
 					currentYear={currentYear}
 					screenOrientation={this.state.screenOrientation}
 					todayButtonPressHandler={this.todayButtonPressHandler}
 				/>
 				<DatesHorizontalList
-					paginatedData={paginatedData}
-					hourRowsList={HOURS_LIST}
-					headerColor={APP_BAR_COLORS[currentColorIndex]}
 					screenDimensions={this.state.screenDimensions}
-					screenOrientation={this.state.screenOrientation}
-					currentPageIndex={currentPageIndex}
-					onHorizontalScroll={this.onHorizontalScroll}
+					headerColor={APP_BAR_COLORS[currentColorIndex]}
+					hourRowsList={HOURS_LIST}
 					currentTime={this.state.currentTime}
+					datesData={this.state.datesData}
+					pageData={pageData}
+					eventsData={
+						this.state.eventsData ? this.state.eventsData : []
+					}
+					currentPageIndex={currentPageIndex}
+					todaysIndex={this.state.todaysIndex}
+					onHorizontalScroll={this.onHorizontalScroll}
 				/>
 			</View>
 		);

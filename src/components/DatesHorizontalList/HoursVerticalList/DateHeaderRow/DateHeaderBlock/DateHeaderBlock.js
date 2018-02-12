@@ -3,23 +3,25 @@ import { View, Text, StyleSheet } from 'react-native';
 
 export default class DateHeaderBlock extends PureComponent {
 	render() {
-		const isToday = this.props.isToday ? (
-			<View
-				style={[
-					styles.isToday,
-					this.props.hasEvent ? { height: 50 } : null
-				]}
-			/>
+		const isTodayViewStyles = [
+			styles.isToday,
+			this.props.hasEvent ? { height: 60 } : null
+		];
+
+		const isTodayBorderView = this.props.isToday ? (
+			<View style={isTodayViewStyles} />
+		) : null;
+
+		const eventDot = this.props.hasEvent ? (
+			<Text style={styles.eventDot}>.</Text>
 		) : null;
 
 		return (
 			<View style={styles.container}>
-				{isToday}
+				{isTodayBorderView}
 				<Text style={styles.dayText}>{this.props.day}</Text>
 				<Text style={styles.dateText}>{this.props.date}</Text>
-				{this.props.hasEvent ? (
-					<Text style={styles.eventDot}>.</Text>
-				) : null}
+				{eventDot}
 			</View>
 		);
 	}
@@ -35,11 +37,12 @@ const styles = StyleSheet.create({
 	},
 	dayText: {
 		color: 'white',
-		fontSize: 12
+		fontSize: 11
 	},
 	dateText: {
 		color: 'white',
-		fontSize: 18
+		marginTop: 3,
+		fontSize: 17
 	},
 	eventDot: {
 		color: 'white',
@@ -49,10 +52,10 @@ const styles = StyleSheet.create({
 	isToday: {
 		position: 'absolute',
 		top: -5,
-		width: 52,
+		width: 48,
 		height: 52,
 		borderRadius: 5,
-		borderColor: 'rgba(255,255,255,0.6)',
+		borderColor: 'rgba(255,255,255,0.8)',
 		borderWidth: 1.5
 	}
 });

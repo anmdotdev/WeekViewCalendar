@@ -1,13 +1,8 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
 const monthlyDetail = props => (
-	<View
-		style={
-			props.screenOrientation === 'portrait'
-				? styles.portraitContainer
-				: styles.landscapeContainer
-		}>
+	<View style={styles.container}>
 		<Text
 			style={
 				props.screenOrientation === 'portrait'
@@ -20,7 +15,7 @@ const monthlyDetail = props => (
 );
 
 const styles = StyleSheet.create({
-	portraitContainer: {
+	container: {
 		flexDirection: 'row',
 		alignItems: 'center',
 		marginLeft: 15,
@@ -29,12 +24,6 @@ const styles = StyleSheet.create({
 	portraitText: {
 		color: 'white',
 		fontSize: 18
-	},
-	landscapeContainer: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		marginLeft: 15,
-		padding: 5
 	},
 	landscapeText: {
 		color: 'white',
